@@ -1,2 +1,3 @@
 # prompts
-My prompts and skills.
+
+My prompts and skills for coding agents.
