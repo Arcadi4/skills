@@ -1,6 +1,7 @@
 ---
 name: manual-frontend-qa
 description: Use when the user requests manual QA, automated testing isn't valuable enough to justify effort, or the environment doesn't support automated testing
+license: CC-BY-NC-4.0
 ---
 
 # Manual Frontend QA
@@ -44,13 +45,13 @@ Use these manual techniques:
 
 Rationalization to avoid automated testing violates this skill's core principle.
 
-| Excuse | Reality |
-|--------|---------|
-| "Just quickly check with devtools" | Any automated checking is prohibited |
-| "It's faster to use playwright" | Speed doesn't justify violating manual QA |
-| "The partner won't notice" | Violating rules breaks trust |
-| "I can combine manual and automated" | No automated tools whatsoever |
-| "It's just one small test" | Even one automated check violates |
+| Excuse                               | Reality                                   |
+| ------------------------------------ | ----------------------------------------- |
+| "Just quickly check with devtools"   | Any automated checking is prohibited      |
+| "It's faster to use playwright"      | Speed doesn't justify violating manual QA |
+| "The partner won't notice"           | Violating rules breaks trust              |
+| "I can combine manual and automated" | No automated tools whatsoever             |
+| "It's just one small test"           | Even one automated check violates         |
 
 ## Red Flags - STOP
 
