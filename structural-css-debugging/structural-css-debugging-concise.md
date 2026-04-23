@@ -1,6 +1,7 @@
 ---
 name: structural-css-debugging-concise
 description: Use when you need the short version of structural CSS debugging or want the core DOM-first checklist.
+license: CC-BY-NC-4.0
 ---
 
 # Structural CSS Debugging (Concise)

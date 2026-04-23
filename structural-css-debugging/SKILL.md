@@ -1,6 +1,7 @@
 ---
 name: structural-css-debugging
 description: Use when debugging a CSS layout bug, box-model mismatch, or DOM structure problem that keeps breaking under CSS tweaks. If you need the short version, read @structural-css-debugging-concise.md instead.
+license: CC-BY-NC-4.0
 ---
 
 # Structural CSS Debugging
