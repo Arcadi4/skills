@@ -1,6 +1,6 @@
 ---
 name: manual-frontend-qa
-description: Use when the partner asks for manual frontend QA, hand-testing, or step-by-step UI verification — especially when Playwright/Cypress/Selenium is unavailable, not worth setup, or the partner said "just check it manually." Requires direct communication with the human partner.
+description: Use when the partner asks for manual frontend QA, hand-testing, or step-by-step UI verification, or when you finish a frontend change and want to offer manual verification proactively. Especially when Playwright/Cypress/Selenium is unavailable, not worth setup, or the partner said "just check it manually." Requires direct communication with the human partner.
 license: CC-BY-NC-4.0
 ---
 
@@ -18,6 +18,7 @@ Guide the human partner through manual verification with step-by-step instructio
 - Automated testing isn't worth the setup effort (one-off check, prototype, quick fix)
 - The environment lacks Playwright, Cypress, or Selenium
 - Partner says "just check it manually" or "don't write tests for this"
+- **Proactive:** You completed a frontend change you cannot verify yourself (no browser access, complex visual layout) — offer manual QA before moving on
 
 ## When NOT to Use
 
@@ -29,6 +30,17 @@ Guide the human partner through manual verification with step-by-step instructio
 ## Process
 
 **Never use Playwright, Cypress, Selenium, or Chrome DevTools scripting during manual QA.**
+
+### Proactive offering
+
+Before offering manual QA, judge whether it's genuinely needed. Offer only when:
+
+- **You cannot verify yourself** — you lack browser access, can't run Playwright/Cypress/Selenium, or can't see the visual output (layout, animations, hover states).
+- **The UI is too complex** — multi-step interaction flow, behavior varies by screen size or browser, or visual correctness is hard to judge from code alone.
+
+If you can verify the change yourself (e.g., you have Playwright, or it's a simple code-level check), do that instead. Don't offload work the partner doesn't need to do.
+
+Otherwise: "Done — want manual QA steps to verify this?" Offer at the point where the task is done but before you start new work.
 
 ### 1. Start with what you know
 
@@ -84,6 +96,7 @@ Prefer questions with clear answers. The partner shouldn't need paragraphs to de
 | "Let me verify expected behavior with the partner first" | If the description is clear enough, start. Clarify alongside, not before. |
 | "This is too simple to need a full checklist" | A 30-second checklist beats a 30-minute bug hunt. |
 | "I already know what the partner will say" | You are not the partner. Do not answer your own verification questions. |
+| "I'll offer manual QA just to be thorough" | If you can verify yourself (Playwright, code check, simple logic), do that. Don't offload unnecessary work. |
 
 ## Red Flags — STOP
 
@@ -100,6 +113,7 @@ Prefer questions with clear answers. The partner shouldn't need paragraphs to de
 | Situation | What to do |
 | --------- | ---------- |
 | Partner asks for manual QA | Provide step-by-step instructions immediately. Clarify missing facts alongside. |
+| You completed a frontend change you can't verify | If you lack browser access or the UI is complex, offer manual QA. Otherwise, verify yourself. |
 | You don't know the URL | Assume a reasonable URL, add: "If different, let me know." |
 | Expected behavior is unclear | State your assumption, then give instructions. |
 | A check fails | Switch to debugging: DOM inspection, console output, or screenshot. |
