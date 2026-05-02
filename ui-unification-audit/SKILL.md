@@ -94,6 +94,8 @@ pattern: <input $$$>                      # Potential input primitive bypasses
 rg "from \"@/app/(domains|features)/<domain>/components/" -g '*.tsx' --files-with-matches
 ```
 
+**Fuzzy match policy:** Non-exact matches are included, not ignored. If a pattern is close but not identical to a known primitive (e.g., a card with slightly different padding, a button missing one hover variant) and the signal is strong that it was intended to use the existing component, include it in the candidate list. Err on the side of inclusion. If you cannot determine whether a candidate is a real divergence or an intentional difference, flag it and ask the user before dropping it.
+
 ### Phase 3: Classify Each Candidate
 
 For each divergence found, ask:
