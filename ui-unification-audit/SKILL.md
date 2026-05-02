@@ -14,7 +14,7 @@ Systematically find UI components and layouts that were intended to be unified b
 - Codebase has a `components/ui/` or design-system layer but pages still hand-roll equivalent markup
 - Multiple files import a shared component AND re-declare its base styles
 - Components live under a domain folder but are imported cross-domain
-- You see repeated className clusters across route files (cards, badges, buttons, empty states)
+- You see repeated style/class clusters across route files (cards, badges, buttons, empty states)
 - Before a design-system refactor to identify highest-impact targets
 
 **Not for:** Greenfield projects without existing primitives, pure CSS audits, accessibility-only reviews.
@@ -34,24 +34,38 @@ Systematically find UI components and layouts that were intended to be unified b
 |--------|----------------|------------------------|
 | File imports primitive AND re-declares its base classes | ✅ Mismatch | |
 | Component in domain folder imported by other domains | ✅ Misplaced | |
-| Same 4-corner-bracket divs rendered manually when `CornerBrackets` exists | ✅ Bypass | |
-| Detail page header is richer than list page header | | ✅ Needs variant prop |
+| Decorative wrapper markup rendered manually when a wrapper primitive exists | ✅ Bypass | |
+| Detail page header is richer than list page header | | ✅ Needs variant |
 | Loading skeleton has different grid columns per page | | ✅ Geometry is page-specific |
 | Empty state uses smaller padding in inline context | | ✅ Needs size variant |
 | Selectable card in picker looks like button but isn't | | ✅ Different interaction model |
-| Two components share 80%+ markup but differ in collapse/action slots | ✅ Extract shell | |
+| Two components share 80%+ markup but differ in slots/regions | ✅ Extract shell | |
 
 ## Implementation
+
+All commands use `<...>` placeholders. Adapt to your project:
+
+| Placeholder | Description | Examples |
+|---|---|---|
+| `<ui-dir>` | Design-system component directory | `components/ui/`, `src/lib/components/`, `src/shared/` |
+| `<src-dirs>` | Directories with pages/routes/features | `app/ pages/`, `src/pages/`, `src/routes/` |
+| `<component-glob>` | Component file extension glob | `*.tsx`, `*.vue`, `*.svelte`, `*.component.ts` |
+| `<import-prefix>` | Import path to UI primitives | `@/components/ui/`, `~/components/ui/`, `$lib/components/` |
 
 ### Phase 1: Inventory Shared Primitives
 
 ```bash
 # List all UI primitives
-ls components/ui/
-# Find CSS utility classes (page-container, section-label, mono-label, guide-line)
-rg "@apply|@layer" app/globals.css
-# Find component exports
-rg "export (function|const)" components/ui/ -g '*.tsx'
+ls <ui-dir>
+
+# Find CSS design tokens / utility classes in your global stylesheet
+# Match your framework's pattern: @apply/@layer (Tailwind), composes: (CSS Modules),
+# styled.` (CSS-in-JS theme), or class selectors for design tokens
+rg "<css-pattern>" <global-css-file>
+
+# Find component exports — adapt regex to your framework's export convention:
+# React: export (function|const), Vue: export default, Angular: @Component
+rg "<export-pattern>" <ui-dir> -g '<component-glob>'
 ```
 
 ### Phase 2: Search for Bypasses and Duplicates
@@ -61,10 +75,10 @@ Run all searches in parallel for maximum throughput.
 **A. Imports of each primitive** — Identifies consumers. Files that import a primitive AND re-declare its styles are the strongest mismatch signal.
 
 ```bash
-rg "from \"@/components/ui/" app components -g '*.tsx'
+rg "from \"<import-prefix>" <src-dirs> -g '<component-glob>'
 ```
 
-**B. Hand-rolled equivalents** — For each primitive identified in Phase 1, extract its signature className cluster (the 3-5 most distinctive utility classes or CSS properties that define its visual identity) and grep for those patterns. Files that render these class clusters WITHOUT importing the primitive are bypasses.
+**B. Hand-rolled equivalents** — For each primitive identified in Phase 1, extract its signature class/style cluster (the 3-5 most distinctive CSS properties, utility classes, or styled definitions that define its visual identity) and grep for those patterns. Files that render these clusters WITHOUT importing the primitive are bypasses.
 
 How to construct the grep for each primitive:
 1. Read the primitive's source to identify its core visual classes (layout, border, typography, spacing)
@@ -74,7 +88,7 @@ How to construct the grep for each primitive:
 
 ```bash
 # Template — fill in per primitive:
-rg "<key-class-1>.*<key-class-2>.*<key-class-3>" <search-paths> -g '*.tsx' -g '!<primitive-source-file>'
+rg "<key-class-1>.*<key-class-2>.*<key-class-3>" <src-dirs> -g '<component-glob>' -g '!<ui-dir>/*'
 ```
 
 **C. Structural bypasses via AST** — Use `ast_grep_search` to find raw HTML elements that map to existing primitives. For each primitive, derive the HTML tag it renders and search for raw instances of that tag in page/component code.
@@ -87,11 +101,12 @@ pattern: <table $$$>$BODY</table>         # Potential table primitive bypasses
 pattern: <input $$$>                      # Potential input primitive bypasses
 ```
 
-**D. Cross-domain imports** — Find components in domain-specific folders that are imported by other domains (misplaced shared components).
+**D. Cross-domain imports** — Find components in domain/feature folders that are imported by other domains (misplaced shared components).
 
 ```bash
-# For each domain folder, find its exports that are imported elsewhere:
-rg "from \"@/app/(domains|features)/<domain>/components/" -g '*.tsx' --files-with-matches
+# For each domain folder, find its exports that are imported elsewhere.
+# Adapt the path pattern to your project's domain/feature structure:
+rg "from \"<import-root>/<domain>/components/" <src-dirs> -g '<component-glob>' --files-with-matches
 ```
 
 **Fuzzy match policy:** Non-exact matches are included, not ignored. If a pattern is close but not identical to a known primitive (e.g., a card with slightly different padding, a button missing one hover variant) and the signal is strong that it was intended to use the existing component, include it in the candidate list. Err on the side of inclusion. If you cannot determine whether a candidate is a real divergence or an intentional difference, flag it and ask the user before dropping it.
@@ -104,7 +119,7 @@ For each divergence found, ask:
 2. **Does the file already import the primitive?** If yes → strong mismatch signal.
 3. **Is the divergence in styling or in structure/behavior?** Styling-only → mismatch. Different slots/interactions → may need variant.
 4. **Is the component in the wrong directory?** Domain component imported cross-domain → misplaced.
-5. **Would adding a variant prop to the existing primitive cover this?** If yes → mismatch (missing variant). If no → may be justified separate component.
+5. **Would adding a variant parameter/prop to the existing primitive cover this?** If yes → mismatch (missing variant). If no → may be justified separate component.
 
 ### Phase 4: Rank and Report
 
@@ -117,7 +132,7 @@ Order by:
 ## Common Mistakes
 
 - **Treating all visual differences as defects.** A detail page header being richer than a list page header is not a bug — it needs a variant, not flattening.
-- **Ignoring unused props on existing primitives.** Props like `color`/`pattern` defined but never wired up indicate abandoned unification intent.
+- **Ignoring unused props/parameters on existing primitives.** Parameters like `color`/`size` defined but never wired up indicate abandoned unification intent.
 - **Only searching imports.** The worst mismatches are files that DON'T import the primitive — they hand-roll it entirely.
 - **Conflating loading skeletons with real components.** Skeleton geometry is page-specific by nature; only the primitive toolkit location and bracket/overlay reuse are audit targets.
 - **Reporting without classification.** A flat list of "these look similar" is not actionable. Always classify: mismatch vs justified variant vs needs-new-primitive.
