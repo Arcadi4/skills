@@ -39,16 +39,16 @@ The ADR header is not one-size-fits-all. Choose metadata based on project contex
 
 **Determine the scale BEFORE writing the ADR.** If uncertain, ask the human partner.
 
-| Scale | Metadata to include | Key rule |
-|---|---|---|
-| **Solo** | Status, Date | **Ask the human first.** Do not auto-apply. |
-| **Hobby group** | Status, Date, Involved | Lightweight. No governance ceremony. |
-| **Small team** | Status, Date, Decision maker, Advisors | Add Confidence if uncertain. |
-| **Business** | Status, Date, Decision maker, Approvers, Stakeholders, Confidence, Cost impact | Full governance. Add Compliance notes when applicable. |
+| Scale | Metadata | Key rule | Guide | Template |
+|---|---|---|---|---|---|
+| **Solo** | Status, Date | **Ask the human first.** Do not auto-apply. | `scale-guides/solo-projects.md` | `templates/solo-adr-template.md` |
+| **Hobby group** | Status, Date, Involved | Lightweight. No governance ceremony. | `scale-guides/hobby-groups.md` | `templates/hobby-group-adr-template.md` |
+| **Small team** | Status, Date, Decision maker, Advisors | Add Confidence if uncertain. | `scale-guides/small-teams.md` | `templates/small-team-adr-template.md` |
+| **Business** | Status, Date, Decision maker, Approvers, Stakeholders, Confidence, Cost impact | Full governance. Add Compliance notes. | `scale-guides/business-projects.md` | `templates/business-adr-template.md` |
 
 **If you don't know the scale, ask.** Guessing produces either overengineered ceremony or missing accountability.
 
-For detailed per-scale adaptation guidance and examples, see `project-scale-guide.md`.
+Load ONLY the guide and template for the scale you are working with. Do not load other scale files — each is self-contained.
 
 ## Scope Sizing
 
@@ -75,9 +75,16 @@ Each ADR answers these questions, in this order:
 
 If the ADR cannot answer these questions, even briefly, the thinking is not done yet.
 
-## ADR Template
+## ADR Templates
 
-A copy-pasteable template lives at `templates/adr-template.md`. It includes inline comments mapping metadata fields to project scale.
+Per-scale templates are in `templates/`. Each is purpose-built for its context — not just different metadata headers, but different structure, tone, and guidance:
+
+- `templates/solo-adr-template.md` — minimal, sections are optional, tone is self-directed
+- `templates/hobby-group-adr-template.md` — lightweight, shared but informal
+- `templates/small-team-adr-template.md` — professional, one decision-maker, async review
+- `templates/business-adr-template.md` — full governance, required fields, quantified impact
+
+Load only the template for the scale you determined above. Do not load templates for other scales.
 
 Keep one ADR per file and one decision per ADR. Do not add sections just to look complete — include only fields that clarify the decision.
 
@@ -169,3 +176,7 @@ When you and your human partner reach a meaningful decision, offer to capture it
 - **Solo:** "We just made a design decision. Since you're working solo, would you like me to capture it as an ADR? I can keep it minimal or include full rationale — your call."
 
 Offer an ADR when the decision is important enough to revisit later, likely to affect future choices, hard to reverse, or the result of real tradeoff discussion. Do not interrupt every tiny choice with ADR ceremony.
+
+## Supplemental Files
+
+All supplemental files are in `scale-guides/` (per-scale adaptation guidance) and `templates/` (per-scale ADR templates). Load only the files for the scale you are working with — each is self-contained. The Adaptive Metadata table above lists the exact files per scale.
