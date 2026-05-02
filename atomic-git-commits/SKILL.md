@@ -79,7 +79,7 @@ Match existing repository patterns. If none established, choose consistently:
 
 - Capitalization of subject line
 - Trailing period or not
-- Scope usage (module name, directory, project concept). Do not invent scopes if the project already has established ones.
+- Scope usage (module name, directory, project concept). Do not invent scopes if the project already has established ones. Never use a commit type as a scope — `fix(perf):` or `refactor(perf):` is invalid. Performance improvements use `perf:` as the type.
 - Commit types (feat, fix, docs, style, refactor, test, chore, perf, ci)
 - Whether to avoid merge commits
 - Prefer starting the commit title (after the type prefix) with an imperative verb: `feat: add login flow` not `feat: login feature`
@@ -189,6 +189,8 @@ Default definitions (adapt to your project's conventions):
 | chore | Build process, dependencies, tooling — external to source |
 | ci | CI configuration and scripts |
 | wip | Work in progress — temporary, squash before merge |
+
+When a change involves both restructuring and performance, choosing between `refactor:` and `perf:` is flexible — pick the aspect you want to emphasize. However, **never nest a commit type inside a scope**: `fix(perf):` and `refactor(perf):` are invalid. The scope field names a module or area, not another type.
 
 ## Real-World Impact
 
