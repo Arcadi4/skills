@@ -133,6 +133,14 @@ git rebase -i HEAD~5
 **Safe**: On local branches, before pushing, before PR.
 **Unsafe**: Rewriting history others have already pulled. Never force-push to main/master.
 
+### Renaming Files (`git mv`)
+
+```bash
+git mv old-name.ts new-name.ts
+```
+
+When renaming or moving a file, include the deletion and addition in the same commit so git detects the rename and preserves file history. Using `git mv` is the simplest way, but manually staging both the old (deleted) and new (added) file in one commit works equally well. This is common during refactors where a file is moved *and* lightly edited — as long as old and new are in the same commit, git detects the movement. Deleting the old file and adding the new one in separate commits breaks history.
+
 ## WIP Commit Strategy
 
 WIP commits are acceptable during exploration. The pattern:
@@ -155,7 +163,8 @@ During active P1 outages, land the minimal fix first. Clean up history in a foll
 |---------|-----|
 | "Misc cleanup" commits | Each cleanup item = its own commit |
 | Mixing generated files with hand-written code | Generated files go in a separate commit |
-| Combining a rename with semantic edits | Separate: rename first, then edit |
+| Combining a rename with semantic edits | Separate: rename first (using `git mv`), then edit |
+| Renaming a file by deleting old and adding new in separate commits | Use `git mv` or do both in one commit — git needs to see old and new together to detect the rename |
 | Tests in the same commit as unrelated implementation | Tests = `test:` type, separate commit |
 | Fix-typo commits cluttering history | Use `git commit --amend` or `--fixup` instead |
 | Using `-m` for non-trivial commits | Use an editor to write a proper multi-line message |
