@@ -1,5 +1,5 @@
 ---
-name: ui-unification-audit
+name: ui-style-consistency
 description: Use when auditing a frontend codebase for duplicated UI components, inconsistent design-system usage, or hand-rolled variants of existing primitives. Triggers on "find duplicated components", "audit design system consistency", "find UI drift", or reviewing a component library for gaps.
 license: CC-BY-NC-4.0
 ---
