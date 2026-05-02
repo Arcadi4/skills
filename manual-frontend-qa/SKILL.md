@@ -1,6 +1,6 @@
 ---
 name: manual-frontend-qa
-description: Use when the human partner explicitly asks for manual QA, hand-testing, or step-by-step verification of a frontend change, when automated testing is unavailable or not worth the setup cost, when you need quick visual verification of a UI change, or when you are about to write playwright/cypress/selenium code but the partner said "just check it manually." Always make sure you have direct communication with the human partner. This means you must not be a sub-agent of another agent.
+description: Use when the partner asks for manual frontend QA, hand-testing, or step-by-step UI verification — especially when Playwright/Cypress/Selenium is unavailable, not worth setup, or the partner said "just check it manually." Requires direct communication with the human partner.
 license: CC-BY-NC-4.0
 ---
 
