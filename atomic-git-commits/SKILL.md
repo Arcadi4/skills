@@ -17,9 +17,9 @@ Each commit = one logical change, one intention. Atomic commits make git bisect,
 
 Can you describe the commit in one sentence without using "and"?
 
-- ✅ "Fix null pointer dereference in checkout flow"
-- ✅ "Add email validation to registration form"
-- ❌ "Fix cart quantity bug and update user model and add tests" → three commits
+- "Fix null pointer dereference in checkout flow" — passes, no "and"
+- "Add email validation to registration form" — passes
+- "Fix cart quantity bug and update user model and add tests" — fails, contains "and" → three commits
 
 ## Atomic Commit Properties
 
@@ -69,6 +69,8 @@ Your commit needs splitting when:
 1. Subject line max 72 characters
 2. Write a body explaining **why** for non-trivial commits (the code shows what)
 3. Do not use `-m` for non-trivial commits — use an editor to write a proper multi-line message
+4. Do not list the files changed in the commit body. Git already tracks that. The body exists to explain **why** the change was made.
+5. Do not reference plan-internal identifiers (task numbers, step names) unless they correspond to a persistent issue tracker. "Implements task 3" is meaningless in `git log` six months later.
 
 ### Adaptive Rules
 
@@ -79,6 +81,7 @@ Match existing repository patterns. If none established, choose consistently:
 - Scope usage (module name, directory, project concept). Do not invent scopes if the project already has established ones.
 - Commit types (feat, fix, docs, style, refactor, test, chore, perf, ci)
 - Whether to avoid merge commits
+- Prefer starting the commit title (after the type prefix) with an imperative verb: `feat: add login flow` not `feat: login feature`
 
 ## Practical Techniques
 
@@ -156,6 +159,9 @@ During active P1 outages, land the minimal fix first. Clean up history in a foll
 | Fix-typo commits cluttering history | Use `git commit --amend` or `--fixup` instead |
 | Using `-m` for non-trivial commits | Use an editor to write a proper multi-line message |
 | One commit per file just because | Commit per logical change, not per file |
+| Listing changed files in the commit body | Git already tracks files. Use body for **why**, not what |
+| Referencing plan task numbers in commit messages | Describe the change itself, not the planning artifact. Write messages that make sense in `git log` without external context |
+| Weak commit titles without a verb | Start descriptions after the type prefix with an action: `add`, `fix`, `update`, `remove`, `refactor`, `extract` |
 
 ## Appendix: Commit Types
 
