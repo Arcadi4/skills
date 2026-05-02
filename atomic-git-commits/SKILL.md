@@ -1,51 +1,184 @@
 ---
 name: atomic-git-commits
-description: Use whenever you are about to make a git commit.
-license: CC-BY-NC-4.0
+description: Use when about to make git commits, when tempted to bundle unrelated changes behind a single message, or when commit history needs to support git bisect, revert, and cherry-pick workflows. Also use when reviewing a branch before creating a PR.
 ---
 
 # Make Atomic Git Commits
 
+## Overview
+
+Each commit = one logical change, one intention. Atomic commits make git bisect, revert, cherry-pick, and code review practical.
+
+**Core principle**: If you cannot describe the commit in one sentence without "and", split it.
+
+**Violating the spirit is violating the letter.** Every rationalization below leads to the same outcome: non-atomic history that breaks bisect, complicates reverts, and confuses reviewers.
+
+## The "And" Test
+
+Can you describe the commit in one sentence without using "and"?
+
+- ✅ "Fix null pointer dereference in checkout flow"
+- ✅ "Add email validation to registration form"
+- ❌ "Fix cart quantity bug and update user model and add tests" → three commits
+
+## Atomic Commit Properties
+
+Each commit must be:
+
+1. **Independent**: Understandable without reading other commits
+2. **Buildable**: Project compiles and all tests pass
+3. **Complete**: The change is fully implemented — no partial work
+
+## Red Flags — Split This Commit
+
+Your commit needs splitting when:
+
+- The subject line contains "and"
+- Two different commit types both apply (feat + fix in one commit)
+- You are tempted to write "misc", "various", "cleanup", or "updates" in the message
+- The body describes unrelated effects
+- Change A can be reverted independently from change B
+- You think "I'll clean this up later"
+
+**All of these mean: split the commit now.**
+
+## Common Rationalizations (and Why They Are Wrong)
+
+| Rationalization | Why It Fails |
+|---|---|
+| "It is only a few lines" | Size does not matter. A 3-line DB config change and a 5-line README update are different intentions. |
+| "I fixed it while working on X" | Work context is not commit boundaries. If the change has a different reason-to-exist, it is a different commit. |
+| "They are both `chore:` type" | Same type ≠ same intention. `chore: update prettier` and `chore: add dependency` are different. |
+| "Splitting is pedantic overhead" | The cost of non-atomic commits (broken bisect, messy reverts, confused reviewers) is paid by future you and your team. |
+| "The test file is too small to deserve its own commit" | No minimum line count. Tests are a different concern (`test:` type) from implementation. Always separate. |
+| "I am exhausted, nobody will care" | Fatigue is not a valid architecture decision. Future you will care when bisecting a bug at 2 AM. |
+
 ## Guidelines
 
-### Atomic Commits
+### Atomicity Rules (Non-Negotiable)
 
-These rules ensures the atomicity of each commit:
+1. Each commit = one logical change, one intention
+2. Never a bulk commit that mixes unrelated changes
+3. Never a fake bulk commit with a vague message hiding multiple changes
+4. Revertible: each commit can be reverted independently
+5. One plan task ≠ one commit — think about atomicity, not tasks
+6. After dispatching sub-agents, commit on their behalf if they did not. Check this first.
 
-1. Each commit should represent a single logical change and a single intention.
-2. An atomic commit is never a bulk commit.
-3. You should never make a fake bulk commit by grouping multiple changes together and write a vague commit message.
-4. Revertible. Each commit should be able to be reverted without affecting other commits at any point in the future.
-5. If you are working on a plan, one task does not always correspond to one commit. Think about the atomic principle. Ignore this rule if the plan specifies a commit strategy.
-6. If you are dispatching sub-agents to work, you must commit on behalf of them if they didn't do so. This is always the first thing to check after retrieving the results.
+### Message Rules (Non-Negotiable)
 
-### Other Mandatory Rules
-
-All rules in this list are non-negotiable. Each commit you make must follow these rules:
-
-1. 72 characters maximum character for the subject line (first line). If you want to add more information, you may do that in the body of the commit message.
+1. Subject line max 72 characters
+2. Write a body explaining **why** for non-trivial commits (the code shows what)
+3. Do not use `-m` for non-trivial commits — use an editor to write a proper multi-line message
 
 ### Adaptive Rules
 
-These rules are adaptive to the repository you are working on. Look for existing patterns before you make commits. If no patterns are established, you may go free-form.
+Match existing repository patterns. If none established, choose consistently:
 
-1. Whether to capitalize the subject line or not.
-2. Whether to use a period at the end of the subject line or not.
-3. Whether to add a scope of change or not. Be consistent if so. A scope is usually a module name, directory name, or an universal concept specific to the project. Do not come up with your own scope if the project already has established patterns.
-4. What commit types are allowed and preferred (e.g., feat, fix, docs, style, refactor, test, chore).
-5. Whether to avoid merge commits or not.
+- Capitalization of subject line
+- Trailing period or not
+- Scope usage (module name, directory, project concept). Do not invent scopes if the project already has established ones.
+- Commit types (feat, fix, docs, style, refactor, test, chore, perf, ci)
+- Whether to avoid merge commits
+
+## Practical Techniques
+
+### Splitting Mixed Changes in One File (`git add -p`)
+
+```bash
+git add -p
+```
+
+| Key | Action |
+|-----|--------|
+| `y` | Stage this hunk |
+| `n` | Skip this hunk |
+| `s` | Split hunk into smaller ones |
+| `e` | Edit hunk manually |
+| `q` | Quit |
+
+### Splitting an Existing Large Commit (`git reset --soft`)
+
+```bash
+git reset --soft HEAD~1       # Undo commit, keep changes staged
+git restore --staged .         # Unstage everything
+git add -p                     # Stage first atomic unit
+git commit -m "first change"
+git add -p                     # Stage second atomic unit
+git commit -m "second change"
+```
+
+### Fixing a Commit In-Place (`--fixup` + `--autosquash`)
+
+```bash
+git commit --fixup <SHA>       # Create fixup commit targeting <SHA>
+git rebase -i --autosquash     # Auto-squash fixups into originals
+```
+
+Use for addressing review feedback: reviewers see only the fixup, autosquash before merge.
+
+### Cleaning History Before a PR (Interactive Rebase)
+
+```bash
+git rebase -i HEAD~5
+# pick   → keep as-is
+# squash → fold into previous commit
+# reword → edit message only
+# drop   → remove entirely
+```
+
+**Safe**: On local branches, before pushing, before PR.
+**Unsafe**: Rewriting history others have already pulled. Never force-push to main/master.
+
+## WIP Commit Strategy
+
+WIP commits are acceptable during exploration. The pattern:
+
+1. **During development**: Make messy WIP commits freely for safety
+2. **Before PR**: Restructure into atomic commits using `git reset --soft` + `git add -p` + interactive rebase
+3. **Never merge WIP commits**: Clean them before merging to main
+
+## Over-Granularity Warning
+
+Atomic ≠ tiny. A refactor touching 20 files can be one atomic commit if it does one thing. Atomizing into commits of 5 lines each creates noise. The test: can each commit be reverted independently without breaking the project?
+
+## Emergency Exception
+
+During active P1 outages, land the minimal fix first. Clean up history in a follow-up commit. Restoration time takes priority over commit hygiene.
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---------|-----|
+| "Misc cleanup" commits | Each cleanup item = its own commit |
+| Mixing generated files with hand-written code | Generated files go in a separate commit |
+| Combining a rename with semantic edits | Separate: rename first, then edit |
+| Tests in the same commit as unrelated implementation | Tests = `test:` type, separate commit |
+| Fix-typo commits cluttering history | Use `git commit --amend` or `--fixup` instead |
+| Using `-m` for non-trivial commits | Use an editor to write a proper multi-line message |
+| One commit per file just because | Commit per logical change, not per file |
 
 ## Appendix: Commit Types
 
-If your repository did not specify otherwise, you may take the following commit type definitions as a reference:
+Default definitions (adapt to your project's conventions):
 
-- feat: A new feature for the user.
-- fix: A bug fix for the user.
-- docs: Changes to the documentation/comments.
-- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc). Lint can count as well.
-- refactor: Slightly beyond linting. Refactoring code that neither fixes a bug nor adds a feature, but changes the internal structure of the code.
-- perf: A code change that improves performance. It's fine to mix up refactor and perf. This depends on the aspect of the change you want to emphasize.
-- test: Changes related to testing. A fix on tests should be categorized as test, not fix.
-- chore: Changes to the build process, auxiliary tools, dependencies, or any other change external to the source code.
-- ci: Changes to any CI configuration files and scripts. You may use chore to cover this as well, but ci is more specific.
-- wip: Work in progress. Use with caution. This is usually used for temporary commits that will be squashed later.
+| Type | Description |
+|------|-------------|
+| feat | New user-facing feature |
+| fix | User-facing bug fix |
+| docs | Documentation or comments only |
+| style | Formatting, whitespace, linting — no logic change |
+| refactor | Code restructuring, no behavior change |
+| perf | Performance improvement |
+| test | Test-related changes (fixing tests = `test:`, not `fix:`) |
+| chore | Build process, dependencies, tooling — external to source |
+| ci | CI configuration and scripts |
+| wip | Work in progress — temporary, squash before merge |
+
+## Real-World Impact
+
+Atomic commits enable:
+
+- **git bisect**: Pinpoint the exact commit that introduced a bug
+- **git revert**: Roll back one change without losing others or causing conflicts
+- **git cherry-pick**: Port specific fixes between branches cleanly
+- **Code review**: Reviewers understand each change independently, catching issues faster
