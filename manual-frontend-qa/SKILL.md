@@ -1,6 +1,6 @@
 ---
 name: manual-frontend-qa
-description: Use only when the human partner explicitly requests a manual frontend QA.
+description: Use when the human partner explicitly asks for manual QA, hand-testing, or step-by-step verification of a frontend change, when automated testing is unavailable or not worth the setup cost, when you need quick visual verification of a UI change, or when you are about to write playwright/cypress/selenium code but the partner said "just check it manually." Always make sure you have direct communication with the human partner. This means you must not be a sub-agent of another agent.
 license: CC-BY-NC-4.0
 ---
 
@@ -8,64 +8,114 @@ license: CC-BY-NC-4.0
 
 ## Overview
 
-Disable automated frontend testing tools and guide the human partner through manual quality assurance workflows.
+Guide the human partner through manual verification with step-by-step instructions they execute in a browser. You provide the checklist, expected outcomes, and answerable questions — the partner does the clicking.
 
-**Core principle:** You provide step-by-step instructions for human execution, never automated testing.
+**Core principle:** You are a QA instructor, not a tester. Violating the letter is violating the spirit.
 
 ## When to Use
 
-Use this skill when:
+- Partner explicitly asks for manual QA, hand-testing, or "can you verify this works?"
+- Automated testing isn't worth the setup effort (one-off check, prototype, quick fix)
+- The environment lacks Playwright, Cypress, or Selenium
+- Partner says "just check it manually" or "don't write tests for this"
 
-- The human partner explicitly requests manual QA
-- Automated testing isn't valuable enough to justify the setup effort
-- The environment lacks automated testing support
-- You need quick verification without test infrastructure
+## When NOT to Use
+
+- Pure backend/data/logic change with no visible UI — use systematic-debugging instead
+- Automated tests already cover the change — run those
+- Partner explicitly asked for automated tests — use the appropriate testing tool
+- You cannot describe expected behavior concretely — clarify requirements first
 
 ## Process
 
-**Never use automated testing tools** (playwright, cypress, selenium, chrome devtools, etc.) during manual QA.
+**Never use Playwright, Cypress, Selenium, or Chrome DevTools scripting during manual QA.**
 
-Follow these steps:
+### 1. Start with what you know
 
-1. **Understand expectations**: Clarify expected behavior. Ask if anything is unclear.
-2. **Determine reproduction steps**: Outline specific actions the partner must take to verify or reproduce.
-3. **Provide clear instructions**: Write concise, executable steps for the partner to follow.
-4. **Ask simple questions**: Use yes/no or multiple-choice questions only. Never ask open-ended questions.
-5. **Analyze feedback**: Review partner responses to determine resolution status or next steps.
+Provide instructions for everything you can infer. Do not wait for perfect information.
 
-## Allowed Manual Evidence Methods
+> **Good:** "Here are the QA steps. I assumed the form is at /login — if different, let me know."
+> **Bad:** "Where is the login form?" (stops and waits — partner hasn't seen any instructions yet)
 
-Use these manual techniques:
+### 2. Scope missing pieces alongside instructions
 
-- **Temporary logging**: Insert logging code, ask for console output. Never commit logging code. Clean up after QA.
-- **DOM inspection**: Ask partner to inspect DOM and share relevant elements.
-- **CSS inspection**: Ask partner to inspect computed CSS properties and share values.
+If you need a fact (URL, component name, expected behavior), ask one targeted question — but alongside the instructions, not before them. Information-gathering about facts is fine:
+- "What URL should I give you steps for?"
+- "Is this React, Vue, or plain HTML?"
+- "Should the error clear on blur or only on correction?"
+
+### 3. Provide step-by-step instructions
+
+Each step must be executable (partner knows exactly what to click), measurable (concrete expected outcome), and ordered (builds on previous steps). Include edge cases the partner won't think of: long input, special characters, rapid clicks, browser back button, Enter key behavior.
+
+### 4. Ask answerable verification questions
+
+Prefer questions with clear answers. The partner shouldn't need paragraphs to describe what they see.
+
+> **Good:** "After submitting with an empty email field, do you see an error next to the email input? (yes/no)"
+> **Good:** "Which describes the button after submit? A) Disabled B) Disappeared C) Still enabled D) Other (describe briefly)"
+> **Bad:** "What happens when you submit the form?" (vague — partner doesn't know what to look for)
+
+### 5. Analyze feedback, decide next step
+
+- All checks pass → Summarize what was verified. QA complete.
+- Some checks fail → Debug that failure first (DOM inspection, console check). Do not start a new QA cycle.
+- Behavior unclear → Ask for specific evidence (screenshot, error text, console output).
+
+## Gathering Evidence on Failures
+
+| Method | Instructions to partner |
+| ------ | ----------------------- |
+| Temporary logging | Add `console.log()`, ask for output. **Never commit.** Remove after QA. |
+| DOM inspection | Right-click → Inspect on the element, share HTML structure or attributes. |
+| CSS inspection | Inspect computed properties (`display`, `position`, `white-space`), share values. |
+| Screenshot | Share a screenshot of the problematic area. |
 
 ## Rationalization Prevention
 
-Rationalization to avoid automated testing violates this skill's core principle.
-
 | Excuse | Reality |
 | ------ | ------- |
-| "Just quickly check with devtools" | Any automated checking is prohibited |
-| "It's faster to use playwright" | Speed doesn't justify violating manual QA |
-| "The partner won't notice" | Violating rules breaks trust |
-| "I can combine manual and automated" | No automated tools whatsoever |
-| "It's just one small test" | Even one automated check violates |
+| "Just quickly check with DevTools" | Any automated checking is prohibited. Partner executes, you instruct. |
+| "It's faster to use Playwright" | If the partner wanted automation, they would have asked for it. |
+| "I can combine manual and automated" | No automated tools whatsoever during manual QA mode. |
+| "It's just one small test" | Even one automated check violates. Consistency matters more than convenience. |
+| "I'll ask one more question before giving instructions" | Stalling is the most common failure. Give instructions first, clarify in parallel. |
+| "The partner didn't specify edge cases, so I'll skip them" | The partner relies on you to think of what they didn't. |
+| "Let me verify expected behavior with the partner first" | If the description is clear enough, start. Clarify alongside, not before. |
+| "This is too simple to need a full checklist" | A 30-second checklist beats a 30-minute bug hunt. |
+| "I already know what the partner will say" | You are not the partner. Do not answer your own verification questions. |
 
-## Red Flags - STOP
+## Red Flags — STOP
 
-- Thinking about using automated testing tools
-- Starting to write playwright/cypress code
-- Asking partner to install testing libraries
-- Considering "just this once" exceptions
-- Feeling tempted by automation shortcuts
+**Automation:** thinking about Playwright/Cypress/Selenium, writing test code, asking partner to install testing libraries, considering "just this once" exceptions.
 
-**All of these mean: Stay in manual QA mode. Partner executes, you instruct.**
+**Paralysis:** asking a third clarification question before any QA steps, thinking "I need to understand the whole system first," searching the codebase when manual QA was requested, rewriting the same step trying to make it perfect.
+
+**Incomplete:** steps that assume the partner knows what to look for, no edge cases, no expected outcomes stated, vague verification questions ("what happens?"), no clear "QA complete" signal.
+
+**All of these mean: give the partner executable instructions now.**
+
+## Quick Reference
+
+| Situation | What to do |
+| --------- | ---------- |
+| Partner asks for manual QA | Provide step-by-step instructions immediately. Clarify missing facts alongside. |
+| You don't know the URL | Assume a reasonable URL, add: "If different, let me know." |
+| Expected behavior is unclear | State your assumption, then give instructions. |
+| A check fails | Switch to debugging: DOM inspection, console output, or screenshot. |
+| All checks pass | Summarize what was verified. Offer to capture as a test case if relevant. |
+| Partner asks you to run the checks | "Manual QA means you execute, I instruct. I cannot click for you." |
 
 ## Common Mistakes
 
-- **Using automated tools**: Never use playwright, cypress, selenium, chrome devtools, or any automated frontend testing tools during manual QA mode.
-- **Asking open questions**: Stick to yes/no or multiple-choice questions for clarity.
-- **Forgetting to remove logging**: Always clean up temporary logging code after QA.
-- **Assuming tool availability**: Don't assume the partner has specific browser extensions or developer tools beyond basic browser inspection capabilities.
+| Mistake | Fix |
+| ------- | --- |
+| Stalling — "Where is the form?" before any instructions | Give instructions first, clarify in parallel |
+| Using Playwright/Cypress/Selenium/DevTools scripting | Never during manual QA. Partner executes, you instruct |
+| Vague verification: "What happens?" | Ask: "Is the button disabled after clicking?" |
+| Assuming the partner sees what you expect | Wait for their answer. Never answer your own questions |
+| Skipping edge cases (happy path only) | Include: long input, special chars, rapid clicks, back button, Enter key |
+| Forgetting to remove temporary `console.log()` | Ask partner to clean up after QA |
+| Continuing QA after a check fails | Stop and debug that failure. The form is already broken |
+| Yes/no after every single click | Group related checks, ask one question at the end of the group |
+| Treating manual QA as a downgrade | Manual QA is legitimate verification. Be as thorough as an automated test |
