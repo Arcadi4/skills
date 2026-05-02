@@ -1,6 +1,6 @@
 ---
 name: manual-frontend-qa
-description: Use when the user requests manual QA, automated testing isn't valuable enough to justify effort, or the environment doesn't support automated testing
+description: Use only when the human partner explicitly requests a manual frontend QA.
 license: CC-BY-NC-4.0
 ---
 
