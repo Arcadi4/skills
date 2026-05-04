@@ -1,6 +1,7 @@
 ---
 name: identify-skill-failure
 description: Use when an agent violates a loaded skill despite it being present in context — a gap exists between what the skill says and what the agent did. Also use when reviewing skill effectiveness after a violation, or when deciding whether a skill needs enhancement vs the failure is tolerable.
+license: CC-BY-SA-4.0
 ---
 
 # Identify Skill Failures

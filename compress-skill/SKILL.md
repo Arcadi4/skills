@@ -1,6 +1,7 @@
 ---
 name: compress-skill
 description: Use when skill documents are too long, bloated with repetitive prose, or the user asks to compress/shorten/tighten/trim a SKILL.md. Also use when a skill has overlapping sections, duplicate explanations, or verbose examples that inflate word count without adding behavioral content.
+license: CC-BY-SA-4.0
 ---
 
 # Compress Skill
