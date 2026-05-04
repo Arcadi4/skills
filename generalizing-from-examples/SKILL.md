@@ -1,6 +1,6 @@
 ---
 name: generalizing-from-examples
-description: Use when a user provides examples prefixed by "for example", "such as", "e.g.", "like", or ends a list with "etc." / "and so on". When loaded, ABSTRACT FIRST before any action — identify the concept the examples are instances of. Then enumerate, structure output, and plan around the concept, not the examples.
+description: Use when a user provides examples prefixed by "for example", "such as", "e.g.", "like", or ends a list with "etc." / "and so on". For architecture/design tasks, abstract first to identify the concept, then enumerate. For research/clarification tasks, enumerate first — the concept organizes the output but the list is the deliverable. Most valuable for documentation, planning, and research; less necessary for direct implementation with sufficient domain context.
 license: CC-BY-SA-4.0
 ---
 
@@ -8,25 +8,22 @@ license: CC-BY-SA-4.0
 
 ## Overview
 
-Users often describe a concept by enumerating instances of it — experiences, examples, concrete cases. They gesture at something they can't or won't name directly, and they trust you to identify what they're pointing at.
+Users often describe something by listing instances of it. They say "like X" or "for example Y" and trust you to understand what larger thing they're pointing at.
 
-**Your core job: identify the transcendental object.** What concept do these examples all participate in? What is the one thing they are instances *of*? The user is showing you shadows on the cave wall; you must name the form casting them.
+**This skill applies primarily to documentation, planning, and research tasks** — contexts where your output structure is shaped by the concepts you identify. For direct implementation tasks where you have sufficient domain context, the skill adds less value; competent agents already produce good plans without it. The skill's leverage is in structuring output: docs, plans, research reports, architecture decisions.
 
-"Track response times on user endpoints" — the concept is Observability. "Use something like Redis for sessions" — the concept is Caching Layer Strategy. "Check auth middleware, for example" — the concept is Security Boundaries.
+**Two equal imperatives, two different leads:**
 
-The most common failure is stopping at the plural: "Redis" → "other caches." That's not abstraction — it's widening. You haven't identified the concept; you've just collected more shadows. The concept is one level above the examples, not one example expanded. Every other part of this skill (enumeration, output structure, closure detection) serves this single act: **name the concept the user is describing.**
+| Context | Lead Imperative | Why |
+|---|---|---|
+| **Architecture / design decisions** (major choices, system-level scope) | **Abstract first** — name the concept, then use it to drive decisions | You can't design without knowing what system you're designing. "Add monitoring, for example track response times" → the concept is Observability, not latency tracking. The concept determines what to build. |
+| **Research / clarification tasks** (find, list, investigate, survey) | **Enumerate first** — the user wants all instances. The concept organizes them but isn't the point | "Research AI agent suites such as X and Y" → the user wants a research report. Enumerate comprehensively, then use the concept (Agent Extension Architecture) to structure the report. Enumeration IS the deliverable. |
 
-### ABSTRACT FIRST. Everything else follows.
-
-**You do not enumerate. You do not plan. You do not structure output. You do not write code.** Not until you have identified the concept.
-
-Abstraction is not a step in a pipeline — it is the compass that points every subsequent step. Enumeration without a concept is a random list. Planning without a concept solves the wrong problem. Output structure without a concept anchors on irrelevant details.
-
-When you detect an example marker, freeze. Don't react to the example. Ask: what concept is this an instance of? Only after you have the concept do you decide what to enumerate, how much to enumerate, and whether the user even wants enumeration at all (some concepts demand a plan, some demand a categorization, some demand a decision).
-
-**The goal-shifting trap:** You identify "Security Boundaries" as the concept. You start enumerating. By the third item, you've drifted — you're now listing "middleware configuration patterns." The concept shifted because enumeration pulled you toward concrete implementations instead of the abstraction. The concept must anchor every step. When enumeration starts, ask again: "am I still enumerating instances of the same concept?"
+**Both imperatives are always active** — the question is which one leads based on what the user is asking you to produce. If the output is a decision, the concept leads. If the output is a list, enumeration leads. Either way: enumerate. The concept is a structure multiplier, not a prerequisite.
 
 ## When to Use
+
+**This skill is most valuable for documentation, planning, and research tasks** — contexts where your output structure is shaped by the concepts you identify. For direct implementation tasks with sufficient domain context, agents typically produce adequate plans without the skill.
 
 ### Triggers — Load this skill when the user:
 
@@ -45,25 +42,23 @@ When you detect an example marker, freeze. Don't react to the example. Ask: what
 
 ### The Inference Ladder
 
-Climb these rungs in order:
+Climb these rungs in order. **Which rung drives the climb depends on context:**
+
+- **Architecture/design task → driven from rung 3 (abstract).** The concept determines what to build; enumeration follows.
+- **Research/clarification task → driven from rung 5 (enumerate).** Comprehensive enumeration is the goal; the concept organizes it.
+- **Either way: all six rungs are visited.** The order just tells you what to prioritize.
 
 ```
 1. Detect marker     →  "for example" = this is illustrative
 2. Isolate example   →  "check auth middleware" — what concept is this an instance of?
-3. ▼ ABSTRACT — THE CRITICAL RUNG ▼
-   Identify concept  →  SECURITY BOUNDARIES
+3. ▼ ABSTRACT ▼
+   Identify concept  →  SECURITY BOUNDARIES (architecture lead) or
+                        a structure label (research lead)
                         Ask: what one thing do all these potential examples participate in?
-                        Auth middleware = enforces access control before request processing.
-                        That property belongs to a category: rate limiting (DOS protection),
-                        input validation (injection prevention), CORS (origin policy),
-                        CSRF (forgery protection), audit logging (accountability).
-                        All are SECURITY BOUNDARIES in the request pipeline — that's
-                        the transcendental object. Auth middleware was one shadow of it.
-4. Infer scope       →  All security-relevant middleware in every route
-5. Enumerate cases   →  Rate limiting, input validation, CORS, CSRF, audit logging...
-6. Confirm boundary  →  "I'll audit all security boundaries — auth, rate limiting,
-                        input validation, CORS, CSRF, audit logging. Does that cover
-                        what you meant?"
+4. Infer scope       →  Architecture: all security-relevant middleware in every route.
+                        Research: all agent extension platforms matching the category.
+5. ENUMERATE CASES   →  The list the user wanted — always produced, never skipped.
+6. Confirm boundary  →  "Does this cover what you meant?"
 ```
 
 ### The Ladder Is Recursive
@@ -225,6 +220,8 @@ Agents resist generalization for predictable reasons. These excuses are wrong:
 | Ignoring "etc." and "and so on" | Explicit signals the list is incomplete. You MUST find more items. |
 | Treating "like X" as "must use X" | "Like" signals similarity, not identity. |
 | **Rename-as-generalize: relabeling the example instead of climbing** | You hear "exhaustive enumeration (patterns like 1. 2. 3.)" and implement a rule that only fires on numbered lists. You renamed, you didn't generalize. The test: list every member of your abstraction without looking at the example. If you can't produce items the example didn't give you, re-climb the ladder. |
+| **Over-abstracting when the task is research/clarification** | User says "research agent suites such as X and Y" — you spend 40% of output naming the concept instead of enumerating. The user wants the list. Name the concept briefly, then enumerate. The concept serves the enumeration, not the other way around. |
+| **Applying the skill to direct implementation** | The agent already has enough context to plan without abstraction. Loading the skill adds overhead without improving output. Reserve the skill for tasks where output STRUCTURE matters: docs, plans, research. |
 | Pattern-matching syntax instead of interpreting the signal | "The user used commas, so it must be a sample." Look for the signal, not the format. |
 
 ## Validation
