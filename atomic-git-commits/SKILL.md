@@ -67,11 +67,11 @@ Your commit needs splitting when:
 
 ### Message Rules (Non-Negotiable)
 
-1. Subject line max 72 characters
-2. Write a body explaining **why** for non-trivial commits (the code shows what)
-3. Do not use `-m` for non-trivial commits — use an editor to write a proper multi-line message
-4. Do not list the files changed in the commit body. Git already tracks that. The body exists to explain **why** the change was made.
-5. Do not reference plan-internal identifiers (task numbers, step names) unless they correspond to a persistent issue tracker. "Implements task 3" is meaningless in `git log` six months later.
+1. Subject line max 72 characters. Use an imperative verb after the type prefix: `feat: add login flow`, `fix: prevent race condition in cache`.
+2. For non-trivial commits, always write a body. Never use `-m` — use an editor to write a proper multi-line message.
+3. **The body is for a human reader.** Summarize the change. Note the intention. Justify the decision. Write in natural language — the body tells a story, not a checklist. The body is never a response to a plan task; it describes the change on its own terms.
+4. **Do not list files changed.** Git already tracks files. "3 files changed, 5 tests added, build passes" is machine output masquerading as a commit message. Forbidden.
+5. **Do not reference plan-internal terminology.** Commits must be self-contained and meaningful in `git log` without external context. Forbidden in commit messages: plan task numbers ("Task 3", "T-14"), wave/phase names ("Wave 2", "Phase 1"), step labels ("Step 4b"), or any language implying the commit is a completion of a planning artifact. If the plan task maps to a persistent issue tracker, reference the ticket ID — not the plan task.
 
 ### Adaptive Rules
 
@@ -167,10 +167,10 @@ During active P1 outages, land the minimal fix first. Clean up history in a foll
 | Renaming a file by deleting old and adding new in separate commits | Use `git mv` or do both in one commit — git needs to see old and new together to detect the rename |
 | Tests in the same commit as unrelated implementation | Tests = `test:` type, separate commit |
 | Fix-typo commits cluttering history | Use `git commit --amend` or `--fixup` instead |
-| Using `-m` for non-trivial commits | Use an editor to write a proper multi-line message |
+| Using `-m` for non-trivial commits | Write a proper multi-line message |
 | One commit per file just because | Commit per logical change, not per file |
-| Listing changed files in the commit body | Git already tracks files. Use body for **why**, not what |
-| Referencing plan task numbers in commit messages | Describe the change itself, not the planning artifact. Write messages that make sense in `git log` without external context |
+| Listing changed files in the commit body | Git already tracks files. "3 files changed, 5 tests added" is noise. Use body to summarize the change and explain the intention in natural language |
+| Referencing plan task numbers in commit messages | Describe the change itself, not the planning artifact. "Implements task 4" is meaningless in `git log`. Write messages that stand alone without external context. Forbidden: task numbers, wave names, phase labels, step IDs |
 | Weak commit titles without a verb | Start descriptions after the type prefix with an action: `add`, `fix`, `update`, `remove`, `refactor`, `extract` |
 
 ## Appendix: Commit Types
