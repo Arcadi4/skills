@@ -1,6 +1,6 @@
 ---
 name: generalizing-from-examples
-description: Use when a user provides examples prefixed by "for example", "such as", "e.g.", "like", or ends a list with "etc." / "and so on". Apply the Inference Ladder: detect the example marker, abstract the underlying concept, enumerate all related cases the user implied but didn't name, and structure your output around the inferred categories — not around the specific examples the user happened to mention.
+description: Use when a user provides examples prefixed by "for example", "such as", "e.g.", "like", or ends a list with "etc." / "and so on". When loaded, ABSTRACT FIRST before any action — identify the concept the examples are instances of. Then enumerate, structure output, and plan around the concept, not the examples.
 license: CC-BY-SA-4.0
 ---
 
@@ -8,9 +8,23 @@ license: CC-BY-SA-4.0
 
 ## Overview
 
-Examples are signposts, not fences. When a user says "for example, X", they are pointing at a concept through X — not limiting the scope to X. Every example marker ("for example", "e.g.", "like", "such as") is the user saying: "I am giving you one instance. Infer the rest."
+Users often describe a concept by enumerating instances of it — experiences, examples, concrete cases. They gesture at something they can't or won't name directly, and they trust you to identify what they're pointing at.
 
-**The critical skill is extracting the abstract concept, not widening the example.** Agents typically underperform here: they see "Redis" and think "other caches" (shallow — pluralizing) instead of "the caching layer strategy" (deep — climbing). The deeper your abstraction, the more value your enumeration produces.
+**Your core job: identify the transcendental object.** What concept do these examples all participate in? What is the one thing they are instances *of*? The user is showing you shadows on the cave wall; you must name the form casting them.
+
+"Track response times on user endpoints" — the concept is Observability. "Use something like Redis for sessions" — the concept is Caching Layer Strategy. "Check auth middleware, for example" — the concept is Security Boundaries.
+
+The most common failure is stopping at the plural: "Redis" → "other caches." That's not abstraction — it's widening. You haven't identified the concept; you've just collected more shadows. The concept is one level above the examples, not one example expanded. Every other part of this skill (enumeration, output structure, closure detection) serves this single act: **name the concept the user is describing.**
+
+### ABSTRACT FIRST. Everything else follows.
+
+**You do not enumerate. You do not plan. You do not structure output. You do not write code.** Not until you have identified the concept.
+
+Abstraction is not a step in a pipeline — it is the compass that points every subsequent step. Enumeration without a concept is a random list. Planning without a concept solves the wrong problem. Output structure without a concept anchors on irrelevant details.
+
+When you detect an example marker, freeze. Don't react to the example. Ask: what concept is this an instance of? Only after you have the concept do you decide what to enumerate, how much to enumerate, and whether the user even wants enumeration at all (some concepts demand a plan, some demand a categorization, some demand a decision).
+
+**The goal-shifting trap:** You identify "Security Boundaries" as the concept. You start enumerating. By the third item, you've drifted — you're now listing "middleware configuration patterns." The concept shifted because enumeration pulled you toward concrete implementations instead of the abstraction. The concept must anchor every step. When enumeration starts, ask again: "am I still enumerating instances of the same concept?"
 
 ## When to Use
 
@@ -35,9 +49,16 @@ Climb these rungs in order:
 
 ```
 1. Detect marker     →  "for example" = this is illustrative
-2. Isolate example   →  "check auth middleware" — but what category is this?
-3. Abstract concept  →  SECURITY BOUNDARIES (not just "all middleware")
-                        Ask: what property does this example share with potential peers?
+2. Isolate example   →  "check auth middleware" — what concept is this an instance of?
+3. ▼ ABSTRACT — THE CRITICAL RUNG ▼
+   Identify concept  →  SECURITY BOUNDARIES
+                        Ask: what one thing do all these potential examples participate in?
+                        Auth middleware = enforces access control before request processing.
+                        That property belongs to a category: rate limiting (DOS protection),
+                        input validation (injection prevention), CORS (origin policy),
+                        CSRF (forgery protection), audit logging (accountability).
+                        All are SECURITY BOUNDARIES in the request pipeline — that's
+                        the transcendental object. Auth middleware was one shadow of it.
 4. Infer scope       →  All security-relevant middleware in every route
 5. Enumerate cases   →  Rate limiting, input validation, CORS, CSRF, audit logging...
 6. Confirm boundary  →  "I'll audit all security boundaries — auth, rate limiting,
@@ -47,13 +68,13 @@ Climb these rungs in order:
 
 ### The Ladder Is Recursive
 
-The ladder is a loop, not a one-pass filter. After you climb it on user input, climb it again on your own output. Most failures occur on this second pass: you think you've generalized, but your "abstraction" is just the example wearing a category label.
+The ladder is a loop. After you name the concept, climb it again on your own output. Most failures happen here: you think you've identified the transcendental object, but your "concept" is just the example in disguise.
 
-**The test:** Can you enumerate category members the example didn't give you? If someone says "exhaustive enumeration (patterns like 1. 2. 3.)" and your implementation only detects numbered lists, you renamed — you didn't generalize. What makes something exhaustive? Numbered lists are ONE mechanism. Closure words, cardinal phrases, definitive conjunctions are equally valid.
+**The test:** Can you name instances of the concept that the example didn't give you? Someone says "exhaustive enumeration (patterns like 1. 2. 3.)." You think your concept is "exhaustive enumeration." But your implementation only detects numbered lists. You didn't identify the concept — you renamed the example. What makes a list exhaustive? Numbered lists are one mechanism. Cardinal words, closure language, definitive conjunctions — these are ALL instances of the concept "closure signal." That's the transcendental object you missed.
 
-**Introspection after every generalization:**
-1. "Did I actually climb, or did I just rename?"
-2. "What would I produce if the user had given a DIFFERENT example of the same category?"
+**After every abstraction, ask:**
+1. "What IS this concept? Not what is it called — what is it?" If someone else read only your concept name, would they generate the same instances?
+2. "What would I produce if the user had given a DIFFERENT instance of the same concept?" If your answer changes radically, you're example-bound, not concept-bound.
 
 ### Closure Signals vs. Openness Signals
 
@@ -103,21 +124,21 @@ Never replace the user's examples — build outward from them. One extra example
 
 ### Abstraction Depth
 
-The same example supports multiple levels of abstraction. Deeper captures intent, not just words.
+The same example supports multiple levels of abstraction. The goal is to identify the concept the examples participate in — not to pluralize the example.
 
-| Example | Shallow (Weak) | Deep (Strong) |
+| Example (shadow) | Widening (still shadows) | Concept (the form) |
 |---|---|---|
-| "track response times" | "monitor all endpoints" | Observability: golden signals across all services |
-| "use something like Redis" | "pick a cache" | Caching layer strategy: session store, query cache, rate limiter |
-| "validate email format" | "validate other fields" | Input integrity: format, type, range, sanitization, business rules |
-| "research agent suites such as X" | "find other suites" | Agent extension architecture: packaging, plugins, distribution |
+| "track response times" | "monitor all endpoints" | **Observability**: golden signals across all services |
+| "use something like Redis" | "pick a cache" | **Caching layer strategy**: session store, query cache, rate limiter |
+| "validate email format" | "validate other fields" | **Input integrity**: format, type, range, sanitization, business rules |
+| "research agent suites such as X" | "find other suites" | **Agent extension architecture**: packaging, plugins, distribution |
 
-**How to deepen:**
-1. What property does this example share with things the user ISN'T naming?
-2. What problem is the user actually solving, for which this example is one solution?
-3. If your abstraction is just the example pluralized, go one level deeper.
+**How to find the concept:**
+1. What singular thing do ALL potential instances participate in? Not "what are more examples" — "what is the ONE thing they share?"
+2. What problem is the user solving, for which this example is one approach?
+3. If your "concept" is just the example with a wider scope, you haven't found it.
 
-**Acid test:** Could you present your abstraction without mentioning their example, and would they say "yes, exactly"?
+**Acid test:** Present the concept without the example. Would the user say "yes, that's the thing I meant"? If your concept only makes sense when the example is visible, it's not a concept — it's the example paraphrased.
 
 ### When NOT to Enumerate
 
@@ -176,6 +197,9 @@ Agents resist generalization for predictable reasons. These excuses are wrong:
 | "I'm being conservative to avoid mistakes" | Conservatism that ignores explicit generalization signals is inattentive. |
 | "Enumerating more is speculating" | Inferring a pattern from an example is comprehension, not speculation. |
 | "I'll put the user's examples as P0" | Priority by who said it = example-anchored thinking. All items are peers. |
+| "I'll work through these one at a time" | Enumeration without the concept first = anchor on examples. Abstract, THEN enumerate. |
+| "This is getting complicated — let me scope down" | Concept drift under cognitive load. Re-anchor on the abstraction before touching scope. |
+| "Actually, the user probably just meant X" | Mid-task concept abandonment. If you identified a concept earlier, you need a reason to change it — fatigue is not a reason. |
 
 ## Red Flags — Stop and Generalize
 
@@ -184,6 +208,9 @@ Agents resist generalization for predictable reasons. These excuses are wrong:
 - "If I add Y it might be wrong"
 - "They only said X, so Y is out of scope"
 - "I'll make the examples the top priority"
+- "I'll start broad and narrow down as I go" (You'll narrow to the examples — concept drift.)
+- Losing the concept mid-enumeration and listing concrete implementations instead
+- Returning to example-anchored language after starting with category-anchored language
 
 **All of these mean: re-read the user's message. Find the example marker. Climb the ladder.**
 
@@ -204,12 +231,13 @@ Agents resist generalization for predictable reasons. These excuses are wrong:
 
 After generalizing, verify:
 
-1. **Does my inferred pattern capture what the example is an instance of?**
-2. **Are my enumerated cases all instances of the same abstraction?**
+1. **Did I name the concept, or just rename the example?** Present the concept without the example. Would the user recognize it?
+2. **Are my enumerated cases all instances of the same concept?** Don't mix categories.
 3. **Would the user say "yes, that's what I meant"?**
-4. **Did I ask for confirmation at the right level?** (Category, not yes/no per item)
-5. **Can a reader identify which items the user mentioned?** If yes, restructure by category.
-6. **Did I actually generalize, or rename?** Can you enumerate members the example didn't give you?
+4. **Did I ask for confirmation at the right level?** (The concept, not a yes/no per item)
+5. **Can a reader identify which items the user mentioned?** If yes, restructure by concept.
+6. **Can I generate instances the example didn't give me?** If my concept only produces variations of the original example, I renamed — I didn't find the concept.
+7. **Did my concept stay stable through enumeration?** Re-read your output start to finish. Do the enumerated items still belong to the original concept, or did the concept drift toward concrete implementations? Goal-shifting is the silent failure — you don't notice it unless you audit. If the end of your output answers a different question than the start, you shifted.
 
 ## Example Dialogues
 
