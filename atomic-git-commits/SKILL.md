@@ -73,7 +73,7 @@ Each commit must be:
 
 3. **Scope usage**: Are parenthesized scopes used (`feat(auth):`)? If so, what scopes exist? Never invent new ones.
 
-4. **Subject length**: Spot-check existing subjects — all should be ≤ 72 chars. Yours must be too.
+4. **Subject length and tone**: Spot-check existing subjects — all ≤ 72 chars, all use formal technical language. Avoid conversational constructions ("make X Y, not Z", "do X instead of Y", "let's X"). Use a single imperative verb describing the change: `infer`, `derive`, `discover`, not `make`.
 
 **If the repo has no commit history**, choose one convention and apply it consistently:
 
@@ -88,7 +88,8 @@ Run these checks before finalizing:
 
 1. `git log --oneline -5` — does your subject format match existing commits?
 2. Measure subject length — is it ≤ 72 characters?
-3. Read the body aloud — does it read as natural language, not a checklist or plan completion?
+3. Is the subject formal? No conversational "X, not Y", "let's X", "make X better". Use a single precise verb.
+4. Read the body aloud — does it read as natural language, not a checklist or plan completion?
 
 ## Practical Techniques
 
