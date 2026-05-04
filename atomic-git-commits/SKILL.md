@@ -43,6 +43,8 @@ Each commit must be:
 | "Splitting is pedantic overhead" | Non-atomic commits break bisect, complicate reverts, confuse reviewers. Future you pays. |
 | "The test file is too small" | No minimum line count. Tests are `test:` type — always separate from implementation. |
 | "I am exhausted, nobody will care" | Fatigue is not an architecture decision. Future you will care when bisecting at 2 AM. |
+| "I need to document every change I made" | The diff documents changes. The body explains WHY you made them — the intention behind the diff. |
+| "Bullet points are the clearest way to list changes" | A bullet-point body is a checklist, not a narrative. Summarize the intent in prose; the diff lists what changed. |
 
 ## Guidelines
 
@@ -58,12 +60,18 @@ Each commit must be:
 ### Message Rules (Non-Negotiable)
 
 1. Subject line max 72 characters. Use an imperative verb. Match the repo's existing subject format — run `git log --oneline -20` to discover the convention before composing your message. If the repo uses `area: description`, use that; don't impose a `type(area): description` format the repo doesn't use.
-2. For non-trivial commits, always write a body. In non-interactive environments, use multiple `-m` flags (each adds a paragraph). In interactive sessions, use an editor.
+2. Write a body if non-trivial. Use multiple `-m` flags (each adds a paragraph) for a multi-line message.
 3. **The body is for a human reader.** Summarize the change. Note the intention. Justify the decision. Write in natural language — the body tells a story, not a checklist. The body is never a response to a plan task; it describes the change on its own terms.
 4. **Do not list files changed.** Git already tracks files. "3 files changed, 5 tests added, build passes" is machine output masquerading as a commit message. Forbidden.
 5. **Do not reference plan-internal terminology.** Commits must be self-contained and meaningful in `git log` without external context. Forbidden in commit messages: plan task numbers ("Task 3", "T-14"), wave/phase names ("Wave 2", "Phase 1"), step labels ("Step 4b"), or any language implying the commit is a completion of a planning artifact. If the plan task maps to a persistent issue tracker, reference the ticket ID — not the plan task.
 
-**When to write a body**: The subject alone suffices for most changes. Write a body when the change needs explanation beyond what the subject provides:
+### Commit Body Guidelines
+
+**Prefer no body. Make the subject self-explanatory.** If the diff alone doesn't make the intent clear, see if you can sharpen the subject first. Only add a body when the subject genuinely cannot carry the explanation.
+
+When a body is unavoidable, use one line: a single `-m` with a brief justification. Multi-paragraph bodies are a last resort — if you need more than 3 `-m` paragraphs, your commit isn't one atomic unit or your subject is failing.
+
+The body explains WHY, not WHAT — the diff already shows what changed.
 
 | Body needed | No body needed |
 |---|---|
@@ -72,10 +80,10 @@ Each commit must be:
 | Refactor that changes structure (why?) | Self-explanatory rename |
 | Performance improvement (bottleneck? gain?) | Trivial cleanup with clear intent |
 | Workaround or temporary fix (why not proper?) | Subject fully describes the change |
-| Breaking change or migration step | |
-| Change touching 5+ files | |
+| Breaking change or migration step | The subject fully describes the change |
+| Change touching 5+ files | Only one file changed, and the intent is crystal clear |
 
-A single-line body ("Prevents race condition when...") is the middle ground — brief justification without a full narrative. Default to no body; add one when the diff alone doesn't make the intent clear.
+**Body form:** prose paragraphs, never bullet points. A body that lists changes is a diff summary, not an intention. If your body reads like a todo list, delete it and either sharpen the subject or write a one-line why-statement.
 
 ### Adaptive Rules
 
@@ -103,7 +111,7 @@ Run these checks before finalizing:
 1. `git log --oneline -5` — does your subject format match existing commits?
 2. Always use the length gate to enforce ≤ 72 chars. Also, do not count characters by yourself.
 3. Is the subject formal? No conversational "X, not Y", "let's X", "make X better". Use a single precise verb.
-4. Read the body aloud — does it read as natural language, not a checklist or plan completion?
+4. **Body gate:** If you wrote a body, ask: can the subject be sharpened to eliminate it? If not, is this one line or does it genuinely need more? If the body has bullet points, numbered lists, or section headers — delete and rewrite as prose. A one-line why-statement is almost always better than a multi-paragraph checklist.
 
 Gate commit on subject length:
 
@@ -198,6 +206,7 @@ During active P1 outages, land the minimal fix first. Clean up history in a foll
 | Referencing plan task numbers in commit messages | Describe the change itself, not the planning artifact. "Implements task 4" is meaningless in `git log`. Write messages that stand alone without external context. Forbidden: task numbers, wave names, phase labels, step IDs |
 | Weak commit titles without a verb | Start descriptions after the type prefix with an action: `add`, `fix`, `update`, `remove`, `refactor`, `extract` |
 | Attempting to count characters manually | Use the length gate command to enforce ≤ 72 chars, never try to count by yourself |
+| Writing a bullet-point checklist as the body | Rewrite as prose. "Merged A, shortened B, compressed C" → "Three overlapping sections repeated the same guidance. Consolidated them while preserving all rules." |
 
 ## Appendix: Commit Types
 
