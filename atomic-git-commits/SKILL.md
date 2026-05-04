@@ -58,7 +58,7 @@ Each commit must be:
 ### Message Rules (Non-Negotiable)
 
 1. Subject line max 72 characters. Use an imperative verb. Match the repo's existing subject format — run `git log --oneline -20` to discover the convention before composing your message. If the repo uses `area: description`, use that; don't impose a `type(area): description` format the repo doesn't use.
-2. For non-trivial commits, always write a body. Never use `-m` — use an editor to write a proper multi-line message.
+2. For non-trivial commits, always write a body. In non-interactive environments, use multiple `-m` flags (each adds a paragraph). In interactive sessions, use an editor.
 3. **The body is for a human reader.** Summarize the change. Note the intention. Justify the decision. Write in natural language — the body tells a story, not a checklist. The body is never a response to a plan task; it describes the change on its own terms.
 4. **Do not list files changed.** Git already tracks files. "3 files changed, 5 tests added, build passes" is machine output masquerading as a commit message. Forbidden.
 5. **Do not reference plan-internal terminology.** Commits must be self-contained and meaningful in `git log` without external context. Forbidden in commit messages: plan task numbers ("Task 3", "T-14"), wave/phase names ("Wave 2", "Phase 1"), step labels ("Step 4b"), or any language implying the commit is a completion of a planning artifact. If the plan task maps to a persistent issue tracker, reference the ticket ID — not the plan task.
@@ -90,6 +90,14 @@ Run these checks before finalizing:
 2. Measure subject length — is it ≤ 72 characters?
 3. Is the subject formal? No conversational "X, not Y", "let's X", "make X better". Use a single precise verb.
 4. Read the body aloud — does it read as natural language, not a checklist or plan completion?
+
+Gate commit on subject length:
+
+```bash
+subject="your subject"; [ ${#subject} -le 72 ] && git commit -m "$subject" -m "$body" || { echo "Subject too long: ${#subject} chars (max 72)"; exit 1; }
+```
+
+Each `-m` adds a paragraph to the body. If the subject exceeds 72 chars, the commit is blocked and the length is printed.
 
 ## Practical Techniques
 
