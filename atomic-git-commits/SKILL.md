@@ -6,23 +6,17 @@ license: CC-BY-SA-4.0
 
 # Make Atomic Git Commits
 
-## Overview
+## Core Principle
 
-Each commit = one logical change, one intention. Atomic commits make git bisect, revert, cherry-pick, and code review practical.
+Each commit = one logical change, one intention. Atomic commits enable git bisect, revert, cherry-pick, and code review. If you cannot describe the commit in one sentence without "and", split it.
 
-**Core principle**: If you cannot describe the commit in one sentence without "and", split it.
+### The "And" Test
 
-**Violating the spirit is violating the letter.** Every rationalization below leads to the same outcome: non-atomic history that breaks bisect, complicates reverts, and confuses reviewers.
-
-## The "And" Test
-
-Can you describe the commit in one sentence without using "and"?
-
-- "Fix null pointer dereference in checkout flow" — passes, no "and"
+- "Fix null pointer dereference in checkout flow" — passes
 - "Add email validation to registration form" — passes
-- "Fix cart quantity bug and update user model and add tests" — fails, contains "and" → three commits
+- "Fix cart quantity bug and update user model and add tests" — fails ("and") → three commits
 
-## Atomic Commit Properties
+### Commit Properties
 
 Each commit must be:
 
@@ -30,9 +24,7 @@ Each commit must be:
 2. **Buildable**: Project compiles and all tests pass
 3. **Complete**: The change is fully implemented — no partial work
 
-## Red Flags — Split This Commit
-
-Your commit needs splitting when:
+### Red Flags — Split Now
 
 - The subject line contains "and"
 - Two different commit types both apply (feat + fix in one commit)
@@ -41,29 +33,27 @@ Your commit needs splitting when:
 - Change A can be reverted independently from change B
 - You think "I'll clean this up later"
 
-**All of these mean: split the commit now.**
+## Common Rationalizations
 
-## Common Rationalizations (and Why They Are Wrong)
-
-| Rationalization | Why It Fails |
+| Rationalization | Reality |
 |---|---|
-| "It is only a few lines" | Size does not matter. A 3-line DB config change and a 5-line README update are different intentions. |
-| "I fixed it while working on X" | Work context is not commit boundaries. If the change has a different reason-to-exist, it is a different commit. |
-| "They are both `chore:` type" | Same type ≠ same intention. `chore: update prettier` and `chore: add dependency` are different. |
-| "Splitting is pedantic overhead" | The cost of non-atomic commits (broken bisect, messy reverts, confused reviewers) is paid by future you and your team. |
-| "The test file is too small to deserve its own commit" | No minimum line count. Tests are a different concern (`test:` type) from implementation. Always separate. |
-| "I am exhausted, nobody will care" | Fatigue is not a valid architecture decision. Future you will care when bisecting a bug at 2 AM. |
+| "It is only a few lines" | Size is irrelevant. Different intentions = different commits. |
+| "I fixed it while working on X" | Work context is not commit boundaries. Different reason-to-exist = different commit. |
+| "They are both `chore:` type" | Same type ≠ same intention. `chore: update prettier` ≠ `chore: add dependency`. |
+| "Splitting is pedantic overhead" | Non-atomic commits break bisect, complicate reverts, confuse reviewers. Future you pays. |
+| "The test file is too small" | No minimum line count. Tests are `test:` type — always separate from implementation. |
+| "I am exhausted, nobody will care" | Fatigue is not an architecture decision. Future you will care when bisecting at 2 AM. |
 
 ## Guidelines
 
 ### Atomicity Rules (Non-Negotiable)
 
 1. Each commit = one logical change, one intention
-2. Never a bulk commit that mixes unrelated changes
-3. Never a fake bulk commit with a vague message hiding multiple changes
-4. Revertible: each commit can be reverted independently
+2. Never a bulk commit mixing unrelated changes
+3. Never a vague message hiding multiple changes
+4. Each commit must be independently revertible
 5. One plan task ≠ one commit — think about atomicity, not tasks
-6. After dispatching sub-agents, commit on their behalf if they did not. Check this first.
+6. After dispatching sub-agents, commit on their behalf if they did not
 
 ### Message Rules (Non-Negotiable)
 
@@ -75,14 +65,12 @@ Your commit needs splitting when:
 
 ### Adaptive Rules
 
-Match existing repository patterns. If none established, choose consistently:
+Match repository conventions. If none, choose consistently:
 
-- Capitalization of subject line
-- Trailing period or not
-- Scope usage (module name, directory, project concept). Do not invent scopes if the project already has established ones. Never use a commit type as a scope — `fix(perf):` or `refactor(perf):` is invalid. Performance improvements use `perf:` as the type.
-- Commit types (feat, fix, docs, style, refactor, test, chore, perf, ci)
-- Whether to avoid merge commits
-- Prefer starting the commit title (after the type prefix) with an imperative verb: `feat: add login flow` not `feat: login feature`
+- Capitalization, trailing period, scope usage
+- Never use a commit type as a scope — `fix(perf):` is invalid; use `perf:` directly
+- Commit types: feat, fix, docs, style, refactor, test, chore, perf, ci
+- Start the subject (after type prefix) with an imperative verb: `feat: add` not `feat: feature`
 
 ## Practical Techniques
 
@@ -139,19 +127,17 @@ git rebase -i HEAD~5
 git mv old-name.ts new-name.ts
 ```
 
-When renaming or moving a file, include the deletion and addition in the same commit so git detects the rename and preserves file history. Using `git mv` is the simplest way, but manually staging both the old (deleted) and new (added) file in one commit works equally well. This is common during refactors where a file is moved *and* lightly edited — as long as old and new are in the same commit, git detects the movement. Deleting the old file and adding the new one in separate commits breaks history.
+Include the deletion and addition in the same commit so git detects the rename. `git mv` is simplest, but manually staging both old (deleted) and new (added) in one commit works too. Deleting the old file and adding the new one in separate commits breaks history.
 
-## WIP Commit Strategy
-
-WIP commits are acceptable during exploration. The pattern:
+## WIP Strategy
 
 1. **During development**: Make messy WIP commits freely for safety
-2. **Before PR**: Restructure into atomic commits using `git reset --soft` + `git add -p` + interactive rebase
-3. **Never merge WIP commits**: Clean them before merging to main
+2. **Before PR**: Restructure into atomic commits (`git reset --soft` + `git add -p` + interactive rebase)
+3. **Never merge WIP commits**: Clean before merging to main
 
 ## Over-Granularity Warning
 
-Atomic ≠ tiny. A refactor touching 20 files can be one atomic commit if it does one thing. Atomizing into commits of 5 lines each creates noise. The test: can each commit be reverted independently without breaking the project?
+Atomic ≠ tiny. A refactor touching 20 files can be one atomic commit if it does one thing. Atomizing into 5-line commits creates noise. The test: can each commit be reverted independently?
 
 ## Emergency Exception
 
@@ -164,9 +150,9 @@ During active P1 outages, land the minimal fix first. Clean up history in a foll
 | "Misc cleanup" commits | Each cleanup item = its own commit |
 | Mixing generated files with hand-written code | Generated files go in a separate commit |
 | Combining a rename with semantic edits | Separate: rename first (using `git mv`), then edit |
-| Renaming a file by deleting old and adding new in separate commits | Use `git mv` or do both in one commit — git needs to see old and new together to detect the rename |
+| Renaming by deleting old and adding new in separate commits | Use `git mv` or stage both in one commit — git needs old and new together to detect the rename |
 | Tests in the same commit as unrelated implementation | Tests = `test:` type, separate commit |
-| Fix-typo commits cluttering history | Use `git commit --amend` or `--fixup` instead |
+| Fix-typo commits cluttering history | Use `git commit --amend` or `--fixup` |
 | Using `-m` for non-trivial commits | Write a proper multi-line message |
 | One commit per file just because | Commit per logical change, not per file |
 | Listing changed files in the commit body | Git already tracks files. "3 files changed, 5 tests added" is noise. Use body to summarize the change and explain the intention in natural language |
@@ -174,8 +160,6 @@ During active P1 outages, land the minimal fix first. Clean up history in a foll
 | Weak commit titles without a verb | Start descriptions after the type prefix with an action: `add`, `fix`, `update`, `remove`, `refactor`, `extract` |
 
 ## Appendix: Commit Types
-
-Default definitions (adapt to your project's conventions):
 
 | Type | Description |
 |------|-------------|
@@ -190,13 +174,4 @@ Default definitions (adapt to your project's conventions):
 | ci | CI configuration and scripts |
 | wip | Work in progress — temporary, squash before merge |
 
-When a change involves both restructuring and performance, choosing between `refactor:` and `perf:` is flexible — pick the aspect you want to emphasize. However, **never nest a commit type inside a scope**: `fix(perf):` and `refactor(perf):` are invalid. The scope field names a module or area, not another type.
-
-## Real-World Impact
-
-Atomic commits enable:
-
-- **git bisect**: Pinpoint the exact commit that introduced a bug
-- **git revert**: Roll back one change without losing others or causing conflicts
-- **git cherry-pick**: Port specific fixes between branches cleanly
-- **Code review**: Reviewers understand each change independently, catching issues faster
+When a change is both restructuring and performance, choose the emphasis. **Never nest a commit type inside a scope**: `fix(perf):` is invalid — the scope names a module, not another type.
