@@ -134,6 +134,26 @@ The output structure must reflect the abstraction. Example-anchored output (P0 =
 
 For skill descriptions, trigger lists, and documentation rules: name the underlying condition first; keep examples as symptoms. If trigger text lets a reader identify the user's examples as the use case, re-climb.
 
+### Context-Stripping Examples
+
+When examples remain recognizable, they anchor the output to the source case. This matters most in skill descriptions, trigger lists, rule tables, smell catalogs, and documentation examples.
+
+Use this pass after abstraction:
+
+1. Extract the transferable relation: what shape makes the example bad, useful, risky, or representative?
+2. Remove incidental source context: product names, file names, role names, team names, prompt phrases, and local field names.
+3. Port the same relation into adjacent domains: API design, auth, configuration, UI, observability, tests, data modeling.
+4. Keep an original example only when it is unusually representative; otherwise tweak it into the abstract shape.
+5. Balance the set so no reader can infer the originating project, request, or file from the examples.
+
+| Anchored example | Context-stripped shape | Adjacent example |
+|---|---|---|
+| `neutralName` from "avoid product terms" | Name mirrors instruction instead of domain | `safeCheckoutStepName` -> `checkoutStepId` |
+| `recommendedCapabilities` never read by behavior | Advisory metadata without a consumer | `suggestedFeatures` never used for selection |
+| Tests asserting prompt headings exist | Structure-only verification | `expect(Object.keys(response)).toContain("metadata")` |
+
+**Check:** if someone can infer the original project, request, or file from your examples, strip more context or add examples from other domains.
+
 ## Quick Reference
 
 | User says | Agent should NOT do | Agent should DO |
