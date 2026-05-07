@@ -141,6 +141,15 @@ The output structure must reflect the abstraction. Example-anchored output (P0 =
 
 **Test:** can a reader identify which items the user mentioned? If yes, restructure.
 
+### Meta-Application: Triggers and Descriptions
+
+For skill descriptions, `When to Use` sections, trigger lists, rubrics, and documentation rules: name the underlying condition first; keep examples as symptoms.
+
+❌ **Example-anchored trigger:** lists artifact types as the primary signal  
+✅ **Concept-anchored trigger:** names the pattern, e.g. `implementation mirrors request wording more than domain needs`
+
+**Gate:** If trigger text lets a reader identify the user's examples as the use case, re-climb.
+
 ## Quick Reference
 
 | User says | Agent should NOT do | Agent should DO |
@@ -206,7 +215,8 @@ After generalizing, verify:
 2. **All cases same concept?** No mixed categories.
 3. **Reader can't identify user's items.** If they can pick them out, restructure by category.
 4. **Can generate instances the example didn't give.** Only variations of the original → renamed, not abstracted.
-5. **Concept stable through enumeration?** Every domain traces to primary requester's examples. Remove primary requester — output still makes sense? You drifted.
+5. **Trigger text concept-anchored?** If writing a description or `When to Use`, it names the condition, not the examples.
+6. **Concept stable through enumeration?** Every domain traces to primary requester's examples. Remove primary requester — output still makes sense? You drifted.
 
 ## Example Dialogues
 

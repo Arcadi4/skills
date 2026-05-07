@@ -53,6 +53,15 @@ Output must reflect the abstraction, not the user's examples.
 ❌ Example-anchored: P1 = what they said, P2 = additions  
 ✅ Category-anchored: all items grouped by concept, user's examples nested within
 
+## Meta-Application: Triggers and Descriptions
+
+For skill descriptions, `When to Use`, trigger lists, rubrics, and documentation rules: name the condition first; keep examples as symptoms.
+
+❌ Example-anchored trigger: lists artifact types as the primary signal  
+✅ Concept-anchored trigger: names the pattern, e.g. `implementation mirrors request wording more than domain needs`
+
+Gate: if trigger text lets a reader identify the user's examples as the use case, re-climb.
+
 ## Conflicting Signals
 
 When multiple stakeholders give conflicting directives (e.g., one says "X, Y, etc." and another says "scope to X only"):
@@ -75,8 +84,9 @@ After generalizing, verify:
 
 1. **Concept or rename?** Can you produce instances unlike the original? If not — re-climb.
 2. **Reader can't identify user's items.** If they can — restructure by category.
-3. **Concept stable through enumeration.** Every domain traces back to the primary requester's examples.
-4. **Confirm boundary.** "Does this cover what you meant?"
+3. **Trigger text concept-anchored?** If writing a description or `When to Use`, it names the condition, not the examples.
+4. **Concept stable through enumeration.** Every domain traces back to the primary requester's examples.
+5. **Confirm boundary.** "Does this cover what you meant?"
 
 ## Red Flags — Stop and Re-climb
 
