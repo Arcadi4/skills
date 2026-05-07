@@ -14,9 +14,9 @@ Compression is a structured reduction — not indiscriminate cutting. Every comp
 
 ## Core Pattern
 
-### The Four Compression Categories
+### Compression Categories
 
-Every compression operation belongs to one of four categories. Enumerate opportunities first, then categorize:
+Every compression operation belongs to one of these categories. Enumerate opportunities first, then categorize:
 
 | Category | Signal | Operation | Example |
 |---|---|---|---|
@@ -24,13 +24,14 @@ Every compression operation belongs to one of four categories. Enumerate opportu
 | **Fold** | Adjacent sections share a parent concept; the smaller one is elaboration, not a distinct topic | Inline the smaller section into the larger one | "Ladder Is Recursive" (9 lines of philosophy) → inlined as 3 lines in Inference Ladder |
 | **Trim** | Prose is verbose but instruction is simple; filler words surround a command | Cut filler; keep the instruction, remove the commentary | "The next thing you should do after this is to enumerate the cases" → "Enumerate cases" |
 | **Prune** | Multiple checks test the same underlying property | Keep the strongest check; drop redundant ones | "Did my concept stay stable?" and "Did the concept drift?" — same test, keep one |
+| **Unify** | Multiple cases teach the same lesson — good examples, bad examples, rationalizations, red flags | Keep the canonical case that captures the generalization; drop variants | Three mistake rows all restating "treated example marker as closure" → keep the clearest one |
 
 ### Compression Workflow
 
 1. **Enumerate opportunities.** Read the skill end-to-end. List every specific compression you see — don't categorize yet. "Merging paragraph X with Y" is an opportunity.
-2. **Categorize.** Assign each opportunity to Merge, Fold, Trim, or Prune. If an opportunity doesn't fit cleanly, reconsider — you might be about to cut behavioral content.
-3. **Sort by safety.** Trims are safest (cut commentary). Merges are safe (keep behavioral). Folds need care (preserve both messages). Prunes risk data loss. Do trims and merges first; re-read after folds and prunes.
-4. **Apply in order.** Execute trims → merges → folds → prunes. This avoids compressing something that later operations would eliminate anyway.
+2. **Categorize.** Assign each opportunity to Merge, Fold, Trim, Prune, or Unify. If an opportunity doesn't fit cleanly, reconsider — you might be about to cut behavioral content.
+3. **Sort by safety.** Trims are safest (cut commentary). Merges are safe (keep behavioral). Folds need care (preserve both messages). Unifies need judgment (same lesson?). Prunes risk data loss. Do trims and merges first; re-read after folds, unifies, and prunes.
+4. **Apply in order.** Execute trims → merges → folds → unifies → prunes. This avoids compressing something that later operations would eliminate anyway.
 5. **Validate.** Run the acid test on the result.
 
 ### The Acid Test
@@ -52,6 +53,7 @@ For every compression, ask: **"If I gave this compressed skill to a fresh agent,
 | Validation checklists | Multiple checks test different failure modes. Pruning is possible only when checks genuinely overlap. |
 | Red Flags lists | Each flag is a self-check trigger. |
 | Conflicting Signals / resolution hierarchies | These are decision trees, not prose. |
+| Adding or expanding content | Compression = reduction. Replacing short text with long text, adding missing rules mid-compression, or "improving" instead of shortening is not compression. Note underspecification; fix separately. |
 
 **Safe to compress:**
 
@@ -69,6 +71,7 @@ For every compression, ask: **"If I gave this compressed skill to a fresh agent,
 | Small section elaborating a parent concept | **Fold** — inline it |
 | "The next thing you should do is..." | **Trim** — just say what to do |
 | Two validation checks asking the same thing | **Prune** — keep the stronger one |
+| Multiple cases teaching the same lesson | **Unify** — keep canonical, drop variants |
 | A code example longer than the rule it teaches | **Trim** — single-line example |
 | Any behavioral table row | **Never touch** unless genuinely redundant |
 
