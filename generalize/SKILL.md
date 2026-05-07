@@ -1,6 +1,6 @@
 ---
 name: generalize
-description: Use when a user provides examples prefixed by "for example", "such as", "e.g.", "like", or ends a list with "etc." / "and so on". Also when extracting an abstract concept from provided facts. Most valuable for documentation, planning, and research.
+description: Use when a user provides examples prefixed by "for example", "such as", "e.g.", "like", or ends a list with "etc." / "and so on". For architecture/design tasks, abstract first to identify the concept, then enumerate. For research/clarification tasks, enumerate first — the concept organizes the output but the list is the deliverable.
 license: CC-BY-SA-4.0
 ---
 
@@ -8,7 +8,7 @@ license: CC-BY-SA-4.0
 
 ## Overview
 
-Users describe by listing instances. "Like X" or "for example Y" means they trust you to find the larger concept. This skill applies to documentation, planning, and research — contexts where output structure depends on the concepts you identify.
+Users describe by listing instances. "Like X" or "for example Y" means they trust you to find the larger concept. This skill applies during **design, planning, and clarification** — when you need to understand what to build before building it.
 
 **Two imperatives; which leads depends on context:**
 
@@ -75,11 +75,13 @@ The user signals either a **closed set** (complete) or an **open set** (samples)
 
 | Mechanism | Examples |
 |---|---|
-| Example markers | "for example", "e.g.", "such as", "like", "including" |
-| Open-ended qualifiers | "etc.", "and so on", "and things like that" |
-| Softening language | "kind of like", "something like", "or whatever" |
-| Trailing openness | "X, Y, Z, etc." — the "etc." overrides the list form |
-| Hedging | "maybe", "probably", "I'm not sure but" |
+| Example markers | "for example", "e.g.", "like", "such as" |
+| Softening qualifiers | "or something", "and so on", "etc.", "and things like that" |
+| Indefinite quantifiers | "some", "a few", "several" |
+| Hedging language | "maybe", "perhaps", "could include" |
+| Tool-as-category | "use Redis" when context is caching strategy |
+
+When both present, **primary requester wins**. If user says "X, Y, etc." and another stakeholder says "scope to X", enumerate the primary requester's concept and flag the conflict.
 
 ### Conflicting Signals (Multiple Stakeholders)
 
@@ -93,7 +95,23 @@ When a query contains conflicting signals from different stakeholders (e.g., one
 
 Another stakeholder's dimension is a **competing scope definition**, not another example. Document the conflict; don't resolve it by inclusion. **Test:** remove the primary requester's message — would your output still make sense? If yes, you've drifted.
 
-### Abstraction Confidence Gates
+### Abstraction Mechanics
+
+**Concept identification (rung 3):**
+
+The concept is the **invariant** across all instances. Not a category label, but the underlying capability or property.
+
+**Abstraction depth:**
+
+| Example (shadow) | Widening (still shadows) | Concept (the form) |
+|---|---|---|
+| "track response times" | "monitor all endpoints" | **Observability**: golden signals across all services |
+| "use something like Redis" | "pick a cache" | **Caching layer strategy**: session store, query cache, rate limiter |
+| "validate email format" | "validate other fields" | **Input integrity**: format, type, range, sanitization, business rules |
+
+**Acid test:** present the concept without the example — would the user recognize it?
+
+**Abstraction confidence gates:**
 
 | Examples | Confidence | Action |
 |---|---|---|
@@ -102,7 +120,14 @@ Another stakeholder's dimension is a **competing scope definition**, not another
 | 4-5 | Strong | Present the category as the real ask. Enumerate confidently. |
 | 6+ | Very strong | The abstraction IS the request. Enumerate comprehensively. |
 
-### Enumeration Step
+**Scope inference (rung 4):**
+
+Architecture/design: Find all relevant instances across the system.
+Research/clarification: Find all matching instances in the category.
+
+**Enumeration (rung 5):**
+
+Always produced. List concrete instances with enough detail to act on.
 
 1. Name the abstract category
 2. List candidates with user's examples nested within
@@ -110,20 +135,7 @@ Another stakeholder's dimension is a **competing scope definition**, not another
 4. If abstraction might overreach: "Do you mean [deeper concept]? If so, I'd cover [cases]."
 5. Let the user trim; don't self-censor. Never replace the user's examples — build outward.
 
-### Abstraction Depth
-
-The same example supports multiple levels. The goal is the **concept**, not the example with a wider scope.
-
-| Example (shadow) | Widening (still shadows) | Concept (the form) |
-|---|---|---|
-| "track response times" | "monitor all endpoints" | **Observability**: golden signals across all services |
-| "use something like Redis" | "pick a cache" | **Caching layer strategy**: session store, query cache, rate limiter |
-| "validate email format" | "validate other fields" | **Input integrity**: format, type, range, sanitization, business rules |
-| "research agent suites such as X" | "find other suites" | **Agent extension architecture**: packaging, plugins, distribution |
-
-**Acid test:** present the concept without the example — would the user recognize it?
-
-### Structure Output by Category, Not by Example
+**Structure output by category, not by example:**
 
 The output structure must reflect the abstraction. Example-anchored output (P0 = what they said) means you've appended, not generalized.
 
@@ -132,44 +144,20 @@ The output structure must reflect the abstraction. Example-anchored output (P0 =
 
 **Test:** can a reader identify which items the user mentioned? If yes, restructure.
 
-For skill descriptions, trigger lists, and documentation rules: name the underlying condition first; keep examples as symptoms. If trigger text lets a reader identify the user's examples as the use case, re-climb.
+## Common Failures
 
-### Context-Stripping Examples
+| Failure Mode | Why It's Wrong |
+|---|---|
+| Treating "for example X" as "only X" | The marker signals non-exhaustiveness. X is a starting point. |
+| Generalizing without confirming | Enumerate and ask. Don't silently expand scope. |
+| Asking the user to enumerate | The marker means the user expects YOU to enumerate. |
+| Ignoring "etc." and "and so on" | Explicit signal the list is incomplete. MUST find more. |
+| **Rename-as-generalize** | Your abstraction only produces variations of the example → renamed, not abstracted. Re-climb. |
+| **Over-abstracting on research tasks** | User wants the list. Name concept briefly, then enumerate. |
+| Pattern-matching syntax instead of signal | "User used commas" is format-matching, not interpretation. |
+| **Folding competing scopes** | One says "X, Y etc.", another says "scope to X." Enumerate primary requester's concept; flag the rest. |
 
-When examples remain recognizable, they anchor the output to the source case. This matters most in skill descriptions, trigger lists, rule tables, smell catalogs, and documentation examples.
-
-Use this pass after abstraction:
-
-1. Extract the transferable relation: what shape makes the example bad, useful, risky, or representative?
-2. Remove incidental source context: product names, file names, role names, team names, prompt phrases, and local field names.
-3. Port the same relation into adjacent domains: API design, auth, configuration, UI, observability, tests, data modeling.
-4. Keep an original example only when it is unusually representative; otherwise tweak it into the abstract shape.
-5. Balance the set so no reader can infer the originating project, request, or file from the examples.
-
-| Anchored example | Context-stripped shape | Adjacent example |
-|---|---|---|
-| `neutralName` from "avoid product terms" | Name mirrors instruction instead of domain | `safeCheckoutStepName` -> `checkoutStepId` |
-| `recommendedCapabilities` never read by behavior | Advisory metadata without a consumer | `suggestedFeatures` never used for selection |
-| Tests asserting prompt headings exist | Structure-only verification | `expect(Object.keys(response)).toContain("metadata")` |
-
-**Check:** if someone can infer the original project, request, or file from your examples, strip more context or add examples from other domains.
-
-## Quick Reference
-
-| User says | Agent should NOT do | Agent should DO |
-|---|---|---|
-| "for example, X" | Scope to X only | Treat X as one instance of a pattern |
-| "like X" | Assume X is mandatory | Treat X as illustrative; find alternatives |
-| "e.g., X, Y" | Treat X,Y as exhaustive | Treat X,Y as a sample; find the rest |
-| "such as X" | Match X literally | Abstract the category X belongs to |
-| "including X" | Start and stop at X | Use X as a springboard |
-| "something like X" | Implement X exactly | Understand what X does that the user values |
-| "etc." / "and so on" | Ignore this signal | MUST enumerate more — the list is incomplete |
-| "or something" | Take literally | User is unsure; propose the category |
-
-## Rationalizations and Red Flags
-
-### Rationalizations (and why they're wrong)
+## Rationalizations (Stop)
 
 | Rationalization | Reality |
 |---|---|
@@ -178,38 +166,15 @@ Use this pass after abstraction:
 | "Better to be precise than wrong" | Precision on the example while missing the pattern is precisely wrong. |
 | "If they wanted Y they would have said Y" | The example marker IS them saying Y. |
 | "I'll start with X and they can ask for more" | Delegation upward. The user expects you to do the thinking. |
-| "Enumerating more is speculating" | Inferring a pattern from an example is comprehension, not speculation. |
-| "I'm being conservative to avoid mistakes" | Ignoring explicit generalization signals is inattentive, not conservative. |
-| "I'll put the user's examples as P0" | Priority by who said it = example-anchored. All items are peers. |
-| "I'll work through these one at a time" | Anchor on examples. Abstract, THEN enumerate. |
-| "This is getting complicated — scope down" | Concept drift under cognitive load. Re-anchor, then decide scope. |
-| "Actually, the user probably just meant X" | Mid-task concept abandonment. Need a reason to change — fatigue isn't one. |
-| "Compliance says this is mandatory" | Belongs in THIS scope for THIS requester? Flag separately, don't fold in. |
 
-### Red Flags — Stop and Re-climb the Ladder
+## Red Flags (Re-climb)
 
-- "I'll just do what they mentioned / handle other cases if they ask / make examples the priority"
+- "I'll just do what they mentioned" / "handle other cases if they ask"
 - Losing the concept mid-enumeration, listing concrete implementations instead
 - Returning to example-anchored language after category-anchored
 - Adding domains from non-primary stakeholders
-- Resolving conflicting directives by including everything (over-inclusion isn't conflict resolution)
+- Resolving conflicting directives by including everything
 - "I'll start broad and narrow down" — you'll narrow to the examples (concept drift)
-
-**All of these mean: re-read the user's message, find the example marker, climb the ladder.**
-
-## Common Mistakes
-
-| Mistake | Fix |
-|---|---|
-| Treating "for example X" as "only X" | The marker signals non-exhaustiveness. X is a starting point. |
-| Generalizing without confirming | Enumerate and ask. Don't silently expand scope. |
-| Asking the user to enumerate | The marker means the user expects YOU to enumerate. |
-| Ignoring "etc." and "and so on" | Explicit signal the list is incomplete. MUST find more. |
-| **Rename-as-generalize** | Your abstraction only produces variations of the example → renamed, not abstracted. Re-climb. |
-| **Over-abstracting on research tasks** | User wants the list. Name concept briefly, then enumerate. |
-| **Applying to direct implementation** | Agent has enough context. Reserve for docs, plans, research. |
-| Pattern-matching syntax instead of signal | "User used commas" is format-matching, not interpretation. |
-| **Folding competing scopes** | One says "X, Y etc.", another says "scope to X." Enumerate primary requester's concept; flag the rest. |
 
 ## Validation
 
@@ -219,7 +184,6 @@ After generalizing, verify:
 2. **All cases same concept?** No mixed categories.
 3. **Reader can't identify user's items.** If they can pick them out, restructure by category.
 4. **Concept stable through enumeration.** Every domain traces to primary requester's examples. Remove primary requester — output still makes sense? You drifted.
-5. **Trigger text concept-anchored** (when writing descriptions/rules). Names the condition, not the examples.
 
 ## Example Dialogues
 
