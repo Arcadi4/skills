@@ -1,6 +1,6 @@
 ---
 name: generalize
-description: Use when a user is describing their needs by examples prefixed by "for example", "such as", "e.g.", "like", or ends a list with "etc." / "and so on". Or, you have to extract an abstract concept from several provided facts. This skill shoul almost always be used for ducmentation, planning, and research tasks.
+description: Use when a user provides examples prefixed by "for example", "such as", "e.g.", "like", or ends a list with "etc." / "and so on". Also when extracting an abstract concept from provided facts. Most valuable for documentation, planning, and research.
 license: CC-BY-SA-4.0
 ---
 
@@ -17,7 +17,7 @@ Users describe by listing instances. "Like X" or "for example Y" means they trus
 | **Architecture / design** | **Abstract first** | Concept determines what to build. "Add monitoring, for example track response times" → Observability, not latency tracking. |
 | **Research / clarification** | **Enumerate first** | The list IS the deliverable. Concept organizes it. |
 
-Both imperatives always active. Output is a decision → concept leads. Output is a list → enumeration leads. Either way: enumerate. Concept is a structure multiplier, not a prerequisite.
+Enumeration always produced. Concept structures it.
 
 ## When to Use
 
@@ -33,6 +33,7 @@ Both imperatives always active. Output is a decision → concept leads. Output i
 - Closure language without example markers: "exactly", "specifically", "only", "precisely"
 - Closure signals: numbered lists, cardinal words ("the three things"), final "and" without "etc."
 - Inherently singular scope (one bug, one file, one function)
+- You're guessing categories the user wouldn't recognize as related
 
 ## Core Pattern
 
@@ -53,11 +54,7 @@ Six rungs, always visited. Which rung drives the climb depends on context:
 
 Architecture/design tasks driven from rung 3 (abstract first). Research/clarification from rung 5 (enumerate first).
 
-**The ladder is recursive.** Re-climb on your own output. The most common failure is **rename-as-generalize**: your "concept" is just the example in disguise. Test: can you name instances the example didn't give? If your concept only produces variations of the original example, re-climb.
-
-**Post-abstraction checks:**
-- "What IS this concept, not what is it called?" If someone read only the concept name, would they generate the same instances?
-- "What would I produce if the user gave a DIFFERENT instance?" Answer changes radically → example-bound, not concept-bound.
+**The ladder is recursive.** Re-climb on your own output. The most common failure is **rename-as-generalize**: your "concept" is just the example in disguise. Test: can you name instances the example didn't give? If your concept only produces variations of the original example, re-climb. See Validation for full checks.
 
 ### Closure Signals vs. Openness Signals
 
@@ -124,13 +121,7 @@ The same example supports multiple levels. The goal is the **concept**, not the 
 | "validate email format" | "validate other fields" | **Input integrity**: format, type, range, sanitization, business rules |
 | "research agent suites such as X" | "find other suites" | **Agent extension architecture**: packaging, plugins, distribution |
 
-**How to find the concept:** What ONE thing do ALL instances share? What problem is the user solving that this example is one approach to? **Acid test:** present the concept without the example — would the user recognize it?
-
-### When NOT to Enumerate
-
-- The example IS the whole thing (inherently singular domain)
-- The user used closure signals
-- You're guessing categories the user wouldn't recognize as related
+**Acid test:** present the concept without the example — would the user recognize it?
 
 ### Structure Output by Category, Not by Example
 
@@ -141,14 +132,7 @@ The output structure must reflect the abstraction. Example-anchored output (P0 =
 
 **Test:** can a reader identify which items the user mentioned? If yes, restructure.
 
-### Meta-Application: Triggers and Descriptions
-
-For skill descriptions, `When to Use` sections, trigger lists, rubrics, and documentation rules: name the underlying condition first; keep examples as symptoms.
-
-❌ **Example-anchored trigger:** lists artifact types as the primary signal  
-✅ **Concept-anchored trigger:** names the pattern, e.g. `implementation mirrors request wording more than domain needs`
-
-**Gate:** If trigger text lets a reader identify the user's examples as the use case, re-climb.
+For skill descriptions, trigger lists, and documentation rules: name the underlying condition first; keep examples as symptoms. If trigger text lets a reader identify the user's examples as the use case, re-climb.
 
 ## Quick Reference
 
@@ -211,12 +195,11 @@ For skill descriptions, `When to Use` sections, trigger lists, rubrics, and docu
 
 After generalizing, verify:
 
-1. **Concept or rename?** Present concept without example. Would user recognize it?
+1. **Concept or rename?** Present concept without example. Would user recognize it? Can you generate instances the example didn't give?
 2. **All cases same concept?** No mixed categories.
 3. **Reader can't identify user's items.** If they can pick them out, restructure by category.
-4. **Can generate instances the example didn't give.** Only variations of the original → renamed, not abstracted.
-5. **Trigger text concept-anchored?** If writing a description or `When to Use`, it names the condition, not the examples.
-6. **Concept stable through enumeration?** Every domain traces to primary requester's examples. Remove primary requester — output still makes sense? You drifted.
+4. **Concept stable through enumeration.** Every domain traces to primary requester's examples. Remove primary requester — output still makes sense? You drifted.
+5. **Trigger text concept-anchored** (when writing descriptions/rules). Names the condition, not the examples.
 
 ## Example Dialogues
 
@@ -233,4 +216,4 @@ After generalizing, verify:
 **User:** "We should add monitoring, for example track response times on the user endpoints."
 
 ❌ *Adds response time tracking to all endpoints.* (Widened, didn't climb.)
-✅ "Observability. Response times are one golden signal — I'll instrument latency (p50/p95/p99), error rate, throughput, and saturation across all services, plus dashboards and alerting. For user endpoints: response times, error rate by endpoint, request volume, DB connection pool saturation. Scoped to latency for now, or full monitoring?"
+✅ "Observability. Response times are one golden signal — I'll instrument latency (p50/p95/p99), error rate, throughput, and saturation across all services. For user endpoints: response times, error rate by endpoint, request volume, DB connection pool saturation. Scoped to latency for now, or full monitoring?"
