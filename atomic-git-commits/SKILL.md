@@ -55,7 +55,7 @@ Each commit must be:
 3. Never a vague message hiding multiple changes
 4. Each commit must be independently revertible
 5. One plan task ≠ one commit — think about atomicity, not tasks
-6. After dispatching sub-agents, commit on their behalf if they did not
+6. If you used sub-agents that produced changes, incorporate their output and commit it appropriately; do not leave uncommitted work attributed to agents.
 
 ### Message Rules (Non-Negotiable)
 
@@ -101,7 +101,7 @@ The body explains WHY, not WHAT — the diff already shows what changed.
 
 - Conventional Commits (`type(scope): summary`) with types: feat, fix, docs, style, refactor, test, chore, perf, ci
 - Or a plain prefix (`area: summary`) where area = skill name, module, component
-- **Never** nest a commit type inside a scope: `fix(perf):` is invalid — the scope names a module, not another type
+- **Do not** use commit types as scopes: avoid `fix(perf):` where `perf` is intended as a commit type; scopes should name modules, components, or areas.
 - Start the subject (after any prefix) with an imperative verb: `feat: add` not `feat: feature`
 
 ### Before You Commit
@@ -223,4 +223,6 @@ During active P1 outages, land the minimal fix first. Clean up history in a foll
 | ci | CI configuration and scripts |
 | wip | Work in progress — temporary, squash before merge |
 
-When a change is both restructuring and performance, choose the emphasis. **Never nest a commit type inside a scope**: `fix(perf):` is invalid — the scope names a module, not another type.
+When a change is both restructuring and performance, choose the emphasis. Do not use commit types as scopes: `fix(perf):` is confusing when `perf` is intended as a type; instead choose a scope that names a module or area.
+
+Conventionally, `style:` used as a commit type never refers to a CSS/design change.
