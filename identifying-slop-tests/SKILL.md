@@ -23,6 +23,8 @@ Use this skill when a test asserts:
 
 Do not use this skill to delete every static assertion. Exact text or exact shape is valid when it is a real product surface, public compatibility contract, protocol, migration boundary, or file format consumed by another tool.
 
+When you do not have enough repository or filesystem context to prove whether a static shape is externally consumed, do not delete the test. Mark it for developer verification instead.
+
 ## Core Pattern
 
 Validation theater asks, "Did the implementation remember the planned structure?"
@@ -50,7 +52,7 @@ Ask these before keeping or writing the test:
 | Independence | The test exists because a prompt demanded rigor. | An engineer would write it without seeing the prompt. |
 | Replacement | No one can name the behavior it protects. | It can be replaced by a behavior-through-surface check. |
 
-If code could be useless while the test still passes, the test is slop.
+If code could be useless while the test still passes, the test is slop unless the assertion protects a known external contract or consumer surface.
 
 ## Common Slop Test Types
 
