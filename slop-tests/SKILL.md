@@ -1,5 +1,5 @@
 ---
-name: identifying-slop-tests
+name: slop-tests
 description: Use when reviewing, writing, or refactoring tests that assert constants, headings, descriptor counts, schema shape, generated templates, examples, advisory metadata, or plan/rubric compliance instead of runtime behavior.
 license: CC-BY-NC-4.0
 ---

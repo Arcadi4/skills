@@ -1,10 +1,10 @@
 ---
-name: independent-design
+name: slop-design
 description: "Use when designing/planning for implementation, and to reflect on your design's domain behavior and real consumers."
 license: CC-BY-NC-4.0
 ---
 
-# Independent Design
+# Design Independently to Prevent Slops
 
 ## Overview
 
