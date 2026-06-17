@@ -1,5 +1,5 @@
 ---
-name: atomic-git-commits
+name: commit
 description: Use when about to make git commits, when tempted to bundle unrelated changes behind a single message, or when commit history needs to support git bisect, revert, and cherry-pick workflows. Also use when reviewing a branch before creating a PR. If you are writing a plan, specify that the executor must load this skill before start working.
 license: CC-BY-SA-4.0
 ---

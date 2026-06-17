@@ -61,7 +61,7 @@ Agent did: "[quote]"
 Proposed fix: [one edit — gate, counter-example, rationalization row, or reorder]
 ```
 
-## Example: Checklist Body (atomic-git-commits)
+## Example: Checklist Body (skill commit)
 
 **Violation:** Agent wrote bullet-point checklist as commit body: "Merged: - A + B - C..."
 
