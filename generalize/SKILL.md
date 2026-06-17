@@ -8,30 +8,30 @@ license: CC-BY-SA-4.0
 
 ## Overview
 
-Users describe by listing instances. "Like X" or "for example Y" means they trust you to find the larger concept. This skill applies during **design, planning, and clarification** — when you need to understand what to build before building it.
+Users describe by listing instances. "Like X" or "for example Y" means they trust you to find the larger concept.
 
 **Two imperatives; which leads depends on context:**
 
-| Context | Lead Imperative | Why |
+| Context | Lead With | Why |
 |---|---|---|
 | **Architecture / design** | **Abstract first** | Concept determines what to build. "Add monitoring, for example track response times" → Observability, not latency tracking. |
 | **Research / clarification** | **Enumerate first** | The list IS the deliverable. Concept organizes it. |
 
-Enumeration always produced. Concept structures it.
+Enumeration is always produced. The context determines which imperative drives.
 
 ## When to Use
 
-**Triggers — load this skill when the user:**
+**Triggers:**
 
-- Uses example markers: "for example", "e.g.", "like", "such as", "including", "things like", "something like"
-- Uses softening qualifiers: "or something", "and so on", "etc.", "and things like that"
-- Names a tool when context signals the category: "use something like Redis" → caching, not Redis
-- Gives one concrete case where the domain obviously contains many parallel cases
+- Example markers: "for example", "e.g.", "like", "such as", "including", "things like", "something like"
+- Softening qualifiers: "or something", "and so on", "etc.", "and things like that"
+- Tool-as-category: "use something like Redis" → caching, not Redis
+- One concrete case where the domain obviously contains many parallel cases
 
 **Do NOT use when:**
 
-- Closure language without example markers: "exactly", "specifically", "only", "precisely"
-- Closure signals: numbered lists, cardinal words ("the three things"), final "and" without "etc."
+- Closure language: "exactly", "specifically", "only", "precisely"
+- Closed-set signals: numbered lists, cardinal words ("the three things"), final "and" without "etc."
 - Inherently singular scope (one bug, one file, one function)
 - You're guessing categories the user wouldn't recognize as related
 
@@ -39,67 +39,42 @@ Enumeration always produced. Concept structures it.
 
 ### The Inference Ladder
 
-Six rungs, always visited. Which rung drives the climb depends on context:
+1. **Detect marker** — "for example" = illustrative, not exhaustive
+2. **Isolate example** — what concept is this an instance of?
+3. **Identify concept** — what ONE thing do all potential instances share?
+4. **Infer scope** — architecture: all items across system; research: all items in category
+5. **Enumerate cases** — always produced, never skipped
+6. **Confirm boundary** — "Does this cover what you meant?"
 
-```
-1. Detect marker     →  "for example" = illustrative, not exhaustive
-2. Isolate example   →  what concept is this an instance of?
-3. ▼ ABSTRACT ▼
-   Identify concept  →  what ONE thing do all potential instances share?
-4. Infer scope       →  architecture: all relevant items across the system
-                        research: all matching items in the category
-5. ENUMERATE CASES   →  always produced, never skipped
-6. Confirm boundary  →  "Does this cover what you meant?"
-```
+**The ladder is recursive.** Re-climb on your own output. The most common failure is **rename-as-generalize**: your "concept" is just the example in disguise. Test: can you name instances the example didn't give? If not, re-climb.
 
-Architecture/design tasks driven from rung 3 (abstract first). Research/clarification from rung 5 (enumerate first).
-
-**The ladder is recursive.** Re-climb on your own output. The most common failure is **rename-as-generalize**: your "concept" is just the example in disguise. Test: can you name instances the example didn't give? If your concept only produces variations of the original example, re-climb. See Validation for full checks.
-
-### Closure Signals vs. Openness Signals
+### Closure vs. Openness Signals
 
 The user signals either a **closed set** (complete) or an **open set** (samples). Look for the signal, not the format.
 
-**Closure signals (exhaustive — do NOT add):**
+**Closure (exhaustive — do NOT add):**
 
-| Mechanism | Examples |
+| Signal | Examples |
 |---|---|
-| Numbered lists | "1. auth, 2. rate limit, 3. logging" |
-| Cardinal words | "the three things are", "both of these" |
-| Definite quantifiers | "the complete list", "everything we need" |
+| Numbered lists / cardinal words | "1. auth, 2. rate limit", "the three things are" |
+| Definite quantifiers / finality | "the complete list", "nothing else", "that's it" |
 | Closing conjunctions | "X, Y, and Z" (final "and" with NO "etc.") |
-| Closure words | "specifically", "only", "exactly", "just", "that's it" |
-| Finality language | "these are the ones", "nothing else" |
+| Closure words | "specifically", "only", "exactly", "just" |
 
-**Openness signals (illustrative — generalize freely):**
+**Openness (illustrative — generalize freely):**
 
-| Mechanism | Examples |
+| Signal | Examples |
 |---|---|
 | Example markers | "for example", "e.g.", "like", "such as" |
-| Softening qualifiers | "or something", "and so on", "etc.", "and things like that" |
-| Indefinite quantifiers | "some", "a few", "several" |
-| Hedging language | "maybe", "perhaps", "could include" |
+| Softening qualifiers | "or something", "and so on", "etc." |
+| Indefinite / hedging | "some", "a few", "maybe", "could include" |
 | Tool-as-category | "use Redis" when context is caching strategy |
 
-When both present, **primary requester wins**. If user says "X, Y, etc." and another stakeholder says "scope to X", enumerate the primary requester's concept and flag the conflict.
-
-### Conflicting Signals (Multiple Stakeholders)
-
-When a query contains conflicting signals from different stakeholders (e.g., one says "X, Y, etc." and another says "scope to X only"), the enumeration scope follows the **primary requester's directive**.
-
-| Priority | Signal Type | Action |
-|---|---|---|
-| 1 | Primary requester's closure directive | Hard boundary. "Scope to what X asked for" → revert to X's examples only. |
-| 2 | Legally-mandated requirements (GDPR, SOC2) | Flag separately with rationale. Do NOT silently fold into the primary concept. |
-| 3 | Other stakeholders' openness signals | Additional context, not additional scope. Acknowledge, defer, don't enumerate into primary output. |
-
-Another stakeholder's dimension is a **competing scope definition**, not another example. Document the conflict; don't resolve it by inclusion. **Test:** remove the primary requester's message — would your output still make sense? If yes, you've drifted.
+**When both present:** primary requester's directive wins. Another stakeholder's dimension is a competing scope definition, not another example — document the conflict, don't resolve by inclusion. Legal requirements (GDPR, SOC2) get flagged separately. **Drift test:** remove the primary requester's message — would your output still make sense? If yes, you've drifted.
 
 ### Abstraction Mechanics
 
-**Concept identification (rung 3):**
-
-The concept is the **invariant** across all instances. Not a category label, but the underlying capability or property.
+The concept is the **invariant** across all instances — the underlying capability, not a category label.
 
 **Abstraction depth:**
 
@@ -111,79 +86,48 @@ The concept is the **invariant** across all instances. Not a category label, but
 
 **Acid test:** present the concept without the example — would the user recognize it?
 
-**Abstraction confidence gates:**
+**Confidence:** 1 example = confirm before enumerating widely. 2–3 = enumerate as educated inference. 4+ = the abstraction IS the request.
 
-| Examples | Confidence | Action |
-|---|---|---|
-| 1 | Weak | Infer pattern, **must confirm** with user before enumerating widely. |
-| 2-3 | Moderate | Abstract and enumerate. Present as educated inference. |
-| 4-5 | Strong | Present the category as the real ask. Enumerate confidently. |
-| 6+ | Very strong | The abstraction IS the request. Enumerate comprehensively. |
-
-**Scope inference (rung 4):**
-
-Architecture/design: Find all relevant instances across the system.
-Research/clarification: Find all matching instances in the category.
-
-**Enumeration (rung 5):**
-
-Always produced. List concrete instances with enough detail to act on.
+### Enumeration Rules
 
 1. Name the abstract category
 2. List candidates with user's examples nested within
-3. Frame additions as educated inference: "Based on [category], also consider [cases]."
+3. Frame additions as inference: "Based on [category], also consider [cases]."
 4. If abstraction might overreach: "Do you mean [deeper concept]? If so, I'd cover [cases]."
 5. Let the user trim; don't self-censor. Never replace the user's examples — build outward.
 
-**Structure output by category, not by example:**
+**Structure by category, not by example.** Example-anchored output means you've appended, not generalized.
 
-The output structure must reflect the abstraction. Example-anchored output (P0 = what they said) means you've appended, not generalized.
+❌ `Caching Research → Priority 1: Redis (user mentioned), Priority 2: Memcached`
+✅ `Caching Layer Strategy → Session store: Redis, Memcached; Query cache: Redis (read-replica); Object cache: Hazelcast`
 
-❌ **Example-anchored:** `Caching Research → Priority 1: Redis (user mentioned), Priority 2: Memcached`
-✅ **Category-anchored:** `Caching Layer Strategy → Session store: Redis, Memcached; Query cache: Redis (read-replica); Object cache: Hazelcast`
+Test: can a reader identify which items the user mentioned? If yes, restructure.
 
-**Test:** can a reader identify which items the user mentioned? If yes, restructure.
+## Stop and Re-climb
 
-## Common Failures
-
-| Failure Mode | Why It's Wrong |
+| What You're Doing | Why It's Wrong |
 |---|---|
 | Treating "for example X" as "only X" | The marker signals non-exhaustiveness. X is a starting point. |
-| Generalizing without confirming | Enumerate and ask. Don't silently expand scope. |
 | Asking the user to enumerate | The marker means the user expects YOU to enumerate. |
-| Ignoring "etc." and "and so on" | Explicit signal the list is incomplete. MUST find more. |
-| **Rename-as-generalize** | Your abstraction only produces variations of the example → renamed, not abstracted. Re-climb. |
-| **Over-abstracting on research tasks** | User wants the list. Name concept briefly, then enumerate. |
-| Pattern-matching syntax instead of signal | "User used commas" is format-matching, not interpretation. |
-| **Folding competing scopes** | One says "X, Y etc.", another says "scope to X." Enumerate primary requester's concept; flag the rest. |
-
-## Rationalizations (Stop)
-
-| Rationalization | Reality |
-|---|---|
-| "The user specifically said X" | They said "for example X" — the marker IS an instruction to generalize. |
+| Ignoring "etc." / "and so on" | Explicit signal the list is incomplete. MUST find more. |
+| Rename-as-generalize | Abstraction only produces variations of the example. Re-climb. |
+| Over-abstracting on research tasks | User wants the list. Name concept briefly, then enumerate. |
+| Pattern-matching syntax not signal | "User used commas" is format-matching, not interpretation. |
+| Folding competing scopes | One says "X, Y etc.", another says "scope to X." Enumerate primary requester's concept; flag the rest. |
+| "The user specifically said X" | They said "for example X" — the marker IS the instruction. |
 | "I don't want to over-engineer" | Under-scoping creates rework. Do it once. |
 | "Better to be precise than wrong" | Precision on the example while missing the pattern is precisely wrong. |
-| "If they wanted Y they would have said Y" | The example marker IS them saying Y. |
-| "I'll start with X and they can ask for more" | Delegation upward. The user expects you to do the thinking. |
+| "I'll start with X, they can ask for more" | Delegation upward. The user expects you to do the thinking. |
+| "I'll start broad and narrow down" | You'll narrow to the examples (concept drift). |
 
-## Red Flags (Re-climb)
-
-- "I'll just do what they mentioned" / "handle other cases if they ask"
-- Losing the concept mid-enumeration, listing concrete implementations instead
-- Returning to example-anchored language after category-anchored
-- Adding domains from non-primary stakeholders
-- Resolving conflicting directives by including everything
-- "I'll start broad and narrow down" — you'll narrow to the examples (concept drift)
-
-## Validation
+## Validation Checklist
 
 After generalizing, verify:
 
-1. **Concept or rename?** Present concept without example. Would user recognize it? Can you generate instances the example didn't give?
+1. **Concept or rename?** Can you generate instances the example didn't give?
 2. **All cases same concept?** No mixed categories.
-3. **Reader can't identify user's items.** If they can pick them out, restructure by category.
-4. **Concept stable through enumeration.** Every domain traces to primary requester's examples. Remove primary requester — output still makes sense? You drifted.
+3. **Reader can't identify user's items.** If they can pick them out, restructure.
+4. **Concept stable through enumeration.** Every item traces to primary requester's concept.
 
 ## Example Dialogues
 
@@ -196,8 +140,3 @@ After generalizing, verify:
 
 ❌ *Only handles 401 on login page.*
 ✅ "Structured error handling across the app. Login: 401, 429, 500, network failures. Same pattern on signup, password reset, settings — they share the API error surface."
-
-**User:** "We should add monitoring, for example track response times on the user endpoints."
-
-❌ *Adds response time tracking to all endpoints.* (Widened, didn't climb.)
-✅ "Observability. Response times are one golden signal — I'll instrument latency (p50/p95/p99), error rate, throughput, and saturation across all services. For user endpoints: response times, error rate by endpoint, request volume, DB connection pool saturation. Scoped to latency for now, or full monitoring?"
