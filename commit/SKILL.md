@@ -37,7 +37,6 @@ Before committing a large staged diff, list the independent revert boundaries in
 | "Both are `chore:` type" | Same type ≠ same intention. `chore: update prettier` ≠ `chore: add dependency`. |
 | "Splitting is pedantic" | Non-atomic commits break bisect, complicate reverts, confuse reviewers. |
 | "Test file is too small" | No minimum line count. Tests are `test:` type — always separate. |
-| "I'm exhausted, nobody will care" | Fatigue is not an architecture decision. Future you cares at 2 AM. |
 | "They are deeply coupled" | Coupling explains staging order, not commit boundaries. Separate intentions with separate revert boundaries = separate commits. Dependency between commits is normal. |
 
 ## Message Rules
