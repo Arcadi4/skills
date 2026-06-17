@@ -24,6 +24,10 @@ Atomic ≠ tiny. A refactor touching 20 files can be one atomic commit if it doe
 - The body describes unrelated effects
 - Change A can be reverted independently from change B
 
+### Revert-Boundary Gate
+
+Before committing a large staged diff, list the independent revert boundaries in one-line phrases. If more than one phrase is required, split the commit — even if the changes are coupled or all tests only pass after the full refactor. "They are coupled" is not an atomicity argument; use transitional buildable commits or explain why no independent revert boundary exists.
+
 ## Common Rationalizations
 
 | Rationalization | Reality |
@@ -34,6 +38,7 @@ Atomic ≠ tiny. A refactor touching 20 files can be one atomic commit if it doe
 | "Splitting is pedantic" | Non-atomic commits break bisect, complicate reverts, confuse reviewers. |
 | "Test file is too small" | No minimum line count. Tests are `test:` type — always separate. |
 | "I'm exhausted, nobody will care" | Fatigue is not an architecture decision. Future you cares at 2 AM. |
+| "They are deeply coupled" | Coupling explains staging order, not commit boundaries. Separate intentions with separate revert boundaries = separate commits. Dependency between commits is normal. |
 
 ## Message Rules
 
