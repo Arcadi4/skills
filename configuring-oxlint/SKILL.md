@@ -1,6 +1,7 @@
 ---
 name: configuring-oxlint
 description: Use when configuring or enhancing oxlint rules for a JavaScript/TypeScript project, when deciding which lint rules to enable beyond the default correctness category, or when evaluating whether a lint rule's autofix status and noise level make it worth enabling. Also use when bulk-enabling pedantic or style categories has produced excessive noise.
+license: CC-BY-SA-4.0
 ---
 
 # Configuring Oxlint
