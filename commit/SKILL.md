@@ -52,7 +52,7 @@ No commit history? Pick one convention and apply consistently. Conventional Comm
 
 ### Subject Line
 
-- Max 72 characters. Use the length gate script (`commit-length-gate.sh` / `.ps1` in this directory) — never count manually.
+- Max 72 characters. Use the length gate script (`@commit-length-gate.sh` / `@commit-length-gate.ps1` in this directory) — never count manually.
 - Start with an imperative verb after any prefix: `add`, `fix`, `extract`, `remove`. Not `feature`, `make`, `let's`.
 - Formal technical language. No conversational constructions ("make X Y, not Z", "do X instead of Y").
 
