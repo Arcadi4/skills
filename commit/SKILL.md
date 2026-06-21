@@ -38,6 +38,7 @@ Before committing a large staged diff, list the independent revert boundaries in
 | "Splitting is pedantic" | Non-atomic commits break bisect, complicate reverts, confuse reviewers. |
 | "Test file is too small" | No minimum line count. Tests are `test:` type — always separate. |
 | "They are deeply coupled" | Coupling explains staging order, not commit boundaries. Separate intentions with separate revert boundaries = separate commits. Dependency between commits is normal. |
+| "I'll just count the characters" | Manual counting fails. Always. Use the length gate script or inline gate — never eyeball it. |
 
 ## Message Rules
 
@@ -52,7 +53,12 @@ No commit history? Pick one convention and apply consistently. Conventional Comm
 
 ### Subject Line
 
-- Max 72 characters. Use the length gate script (`@commit-length-gate.sh` / `@commit-length-gate.ps1` in this directory) — never count manually.
+- Max 72 characters. **Always commit through the length gate script** — never call `git commit` directly. The script enforces the limit and is the only sanctioned commit command:
+  ```bash
+  ./commit-length-gate.sh "subject" "optional body paragraph"   # bash
+  ./commit-length-gate.ps1 "subject" "optional body paragraph"  # pwsh
+  ```
+  If the script is not available in the repo, use the inline gate: `subject="..."; [ ${#subject} -le 72 ] && git commit -m "$subject" || echo "Too long: ${#subject}"`. Never count characters yourself — it does not work.
 - Start with an imperative verb after any prefix: `add`, `fix`, `extract`, `remove`. Not `feature`, `make`, `let's`.
 - Formal technical language. No conversational constructions ("make X Y, not Z", "do X instead of Y").
 
@@ -100,6 +106,7 @@ When a change is both restructuring and performance, choose the emphasis.
 | Rename split across commits (delete old + add new) | Stage both in one commit — git needs old and new together for rename detection |
 | One commit per file | Commit per logical change, not per file |
 | Sub-agent output left uncommitted | Incorporate sub-agent changes and commit appropriately |
+| Calling `git commit` directly | Always use the length gate script. Raw `git commit` bypasses the 72-char enforcement. |
 
 ## Emergency Exception
 
