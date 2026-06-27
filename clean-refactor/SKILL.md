@@ -23,6 +23,10 @@ A transition measure is earned by evidence of real consumers. Without that evide
 
 **There is no middle ground.** "Someone might use it" is not evidence. "It feels safer" is not evidence. The analysis already ran — use its results.
 
+## Recursive Cleanup
+
+Deleting the old form is not the end. Trace its dependency graph — types, helpers, config entries, test fixtures — and delete anything that was dedicated to it and has zero remaining consumers. Recurse until no orphans remain.
+
 ## Quick Reference
 
 | Situation | Clean refactor | Fake transition (WRONG) |
@@ -32,6 +36,8 @@ A transition measure is earned by evidence of real consumers. Without that evide
 | Changed function signature, zero external callers | Change signature directly | Add wrapper with old signature that calls new one |
 | Removed feature, zero references | Delete all code | Comment out "in case we need it later" |
 | Moved function to new module, updated all imports | Delete from old location | Re-export from old location "for compatibility" |
+| Deleted function had a dedicated helper with zero other callers | Delete the helper too | Leave helper in place "it might be useful" |
+| Removed type that had a dedicated validation function, zero other refs | Delete the validation function | Keep it "as a utility" |
 
 ## Red Flags — STOP and Refactor Cleanly
 
@@ -44,6 +50,8 @@ You are creating a fake transition if you are about to:
 - Leave dead code in place "for reference" instead of trusting version control
 - Add a compatibility layer between old and new code when no external consumer exists
 - Keep an unused re-export in a barrel file "in case something needs it"
+- Delete a function but leave its dedicated helper, type, or config entry behind
+- Stop cleanup at the direct target without checking what it depended on
 
 **All of these mean: delete the code and move on.**
 
@@ -58,6 +66,8 @@ You are creating a fake transition if you are about to:
 | "What if we need to revert?" | That's what version control is for. The old code is one `git log` away. |
 | "The wrapper makes the refactor non-breaking" | There's nothing to break — zero consumers. The wrapper is dead code on arrival. |
 | "I'm being cautious" | Caution with evidence is engineering. Caution without evidence is cargo cult. |
+| "The helper might be useful elsewhere" | It has zero callers. If someone needs it, they'll write it — or find it in git history. |
+| "I only needed to remove the one function" | You needed to remove the dead code. Its dedicated infrastructure is also dead code. |
 
 ## When Transition Measures ARE Justified
 
