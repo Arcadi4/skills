@@ -1,6 +1,6 @@
 ---
 name: clean-refactor
-description: Use when removing dead code, renaming symbols, deleting unused exports, or refactoring — any change where nothing external depends on the old form. Triggers on deprecation annotations added to dead code, wrapper shims around renamed functions, compatibility aliases with zero consumers, or TODO-future-cleanup comments instead of cleaning now.
+description: Use when removing dead code, renaming symbols, or refactoring — any change with no external consumers. Triggers on deprecating dead code, wrapper shims, compatibility aliases, TODO-future-cleanup, or refactors that patch structure instead of simplifying.
 license: CC-BY-NC 4.0
 ---
 
@@ -11,6 +11,20 @@ license: CC-BY-NC 4.0
 If nothing depends on the old form, delete it. No deprecation notice, no compatibility shim, no migration period.
 
 A transition measure is earned by evidence of real consumers. Without that evidence, it is fake scaffolding that makes the codebase worse — it adds dead code while pretending to manage a migration that doesn't exist.
+
+## Refactor, Don't Patch
+
+Refactoring changes structure. Patching leaves the old structure in place and bolts on new code.
+
+- **If nothing references the original structure, delete it.** A class or module that exists only because it used to be there is dead code. Replace it with the smallest new structure that fits the current design.
+- **Don't add new functions, classes, or modules just to satisfy a structural requirement.** An `OrderValidator` class next to an unchanged `OrderProcessor` is lazy structure, not clean design.
+- **Redefine the semantics of existing code.** If a function's job changes, change the function — don't wrap it.
+- **Treat the affected code like a rewrite.** Remove old pieces aggressively while tests pass, then add the smallest replacement.
+- **If the old structure becomes a thin wrapper, delete it.** A class with one delegating method is dead code with extra syntax.
+
+## A Refactor Must Simplify
+
+If the result has more lines, files, deeper call chains, or public symbols, stop. The requirement is unclear or the approach is wrong. Clean refactor reduces surface area.
 
 ## The Rule
 
@@ -38,6 +52,10 @@ Deleting the old form is not the end. Trace its dependency graph — types, help
 | Moved function to new module, updated all imports | Delete from old location | Re-export from old location "for compatibility" |
 | Deleted function had a dedicated helper with zero other callers | Delete the helper too | Leave helper in place "it might be useful" |
 | Removed type that had a dedicated validation function, zero other refs | Delete the validation function | Keep it "as a utility" |
+| Refactor adds a new class/function just to patch structure | Redefine existing responsibilities and remove leftover scaffolding | Leave old structure in place and add a parallel helper/class |
+| Refactor produces more LoC or deeper call chains | Stop and clarify the requirement or rethink the design | Add layers until the code "works" |
+| Function/object semantics need to change | Change the existing function/object directly | Add a wrapper/adapter that preserves the old semantics |
+| Old structure's responsibilities have moved out and nothing references it | Delete the old class/module and express what's left in the new shape | Keep the original class/module as a stripped-down coordinator |
 
 ## Red Flags — STOP and Refactor Cleanly
 
@@ -52,6 +70,12 @@ You are creating a fake transition if you are about to:
 - Keep an unused re-export in a barrel file "in case something needs it"
 - Delete a function but leave its dedicated helper, type, or config entry behind
 - Stop cleanup at the direct target without checking what it depended on
+- Add a new function, class, or module just to satisfy a structure requirement while leaving the old structure intact
+- Finish a refactor with more total code or deeper call chains than you started with
+- Wrap an existing function instead of changing its semantics
+- Extract code into a helper but leave the original duplicated logic in place
+- Leave a class or object in place after it has become a thin wrapper around the new code
+- Preserve the original class/module/function shape after its responsibilities have moved elsewhere
 
 **All of these mean: delete the code and move on.**
 
@@ -68,6 +92,10 @@ You are creating a fake transition if you are about to:
 | "I'm being cautious" | Caution with evidence is engineering. Caution without evidence is cargo cult. |
 | "The helper might be useful elsewhere" | It has zero callers. If someone needs it, they'll write it — or find it in git history. |
 | "I only needed to remove the one function" | You needed to remove the dead code. Its dedicated infrastructure is also dead code. |
+| "I just extracted a helper" | Extraction without removing the duplicated original is duplication, not refactoring. |
+| "The old class still works" | If its responsibilities moved elsewhere, it's dead code wearing a familiar name. |
+| "I'll keep both shapes for now" | That's a compatibility layer. It is only justified for verified external consumers. |
+| "Changing all callers is too risky" | Internal callers can be updated in the same change. Risk without evidence is cargo cult. |
 
 ## When Transition Measures ARE Justified
 
