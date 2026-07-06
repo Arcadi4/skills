@@ -49,6 +49,7 @@ Deleting the old form is not the end. Trace its dependency graph — types, help
 | Renamed function, zero callers of old name | Delete old name | Keep old name as alias: `export const old = new` |
 | Changed function signature, zero external callers | Change signature directly | Add wrapper with old signature that calls new one |
 | Removed feature, zero references | Delete all code | Comment out "in case we need it later" |
+| Removed enum/string values, zero current consumers | Remove constants, docs, tests, and all references | Add explicit guards like `case "old": return error` |
 | Moved function to new module, updated all imports | Delete from old location | Re-export from old location "for compatibility" |
 | Deleted function had a dedicated helper with zero other callers | Delete the helper too | Leave helper in place "it might be useful" |
 | Removed type that had a dedicated validation function, zero other refs | Delete the validation function | Keep it "as a utility" |
@@ -67,6 +68,7 @@ You are creating a fake transition if you are about to:
 - Add a TODO comment like "remove after migration" when there is nothing to migrate
 - Leave dead code in place "for reference" instead of trusting version control
 - Add a compatibility layer between old and new code when no external consumer exists
+- Add a parser or validator branch that recognizes removed legacy values only to reject, translate, warn, or special-case them
 - Keep an unused re-export in a barrel file "in case something needs it"
 - Delete a function but leave its dedicated helper, type, or config entry behind
 - Stop cleanup at the direct target without checking what it depended on
@@ -89,6 +91,7 @@ You are creating a fake transition if you are about to:
 | "I'll clean it up later" | No you won't. The TODO will rot. Delete it now. |
 | "What if we need to revert?" | That's what version control is for. The old code is one `git log` away. |
 | "The wrapper makes the refactor non-breaking" | There's nothing to break — zero consumers. The wrapper is dead code on arrival. |
+| "I'm not supporting it, only rejecting it cleanly" | Recognizing the old value is still a compatibility gate. If the old form has no current contract, delete knowledge of it and let the normal parser or error path handle it. |
 | "I'm being cautious" | Caution with evidence is engineering. Caution without evidence is cargo cult. |
 | "The helper might be useful elsewhere" | It has zero callers. If someone needs it, they'll write it — or find it in git history. |
 | "I only needed to remove the one function" | You needed to remove the dead code. Its dedicated infrastructure is also dead code. |
