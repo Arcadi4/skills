@@ -38,7 +38,7 @@ Before committing a large staged diff, list the independent revert boundaries in
 | "Splitting is pedantic" | Non-atomic commits break bisect, complicate reverts, confuse reviewers. |
 | "Test file is too small" | No minimum line count. Tests are `test:` type — always separate. |
 | "They are deeply coupled" | Coupling explains staging order, not commit boundaries. Separate intentions with separate revert boundaries = separate commits. Dependency between commits is normal. |
-| "I'll just count the characters" | Manual counting fails. Always. Use the length gate script or inline gate — never eyeball it. |
+| "I'll just count the characters" | Manual counting fails. Always. Use the length gate script — never eyeball it. |
 
 ## Message Rules
 
@@ -53,12 +53,26 @@ No commit history? Pick one convention and apply consistently. Conventional Comm
 
 ### Subject Line
 
-- Max 72 characters. **Always commit through the length gate script** — never call `git commit` directly. The script enforces the limit and is the only sanctioned commit command:
+- Max 72 characters. **Always commit through the length gate script** — never call `git commit` directly. Write the matching script below to an executable file and run it; it enforces the limit and is the only sanctioned commit command. Never count characters yourself — it does not work.
+
   ```bash
-  ./commit-length-gate.sh "subject" "optional body paragraph"   # bash
-  ./commit-length-gate.ps1 "subject" "optional body paragraph"  # pwsh
+  #!/usr/bin/env bash
+  # commit-length-gate.sh "subject" ["body paragraph" ...] — each arg after the subject becomes a -m body paragraph.
+  set -euo pipefail
+  [[ $# -ge 1 ]] || { echo "usage: $0 \"subject\" [\"body\"...]" >&2; exit 1; }
+  s=$1; shift
+  ((${#s} <= 72)) || { echo "Subject too long: ${#s} chars (max 72): $s" >&2; exit 1; }
+  a=(-m "$s"); for b in "$@"; do a+=(-m "$b"); done
+  exec git commit "${a[@]}"
   ```
-  If the script is not available in the repo, use the inline gate: `subject="..."; [ ${#subject} -le 72 ] && git commit -m "$subject" || echo "Too long: ${#subject}"`. Never count characters yourself — it does not work.
+
+  ```powershell
+  # commit-length-gate.ps1 "subject" ["body paragraph" ...] — each arg after the subject becomes a -m body paragraph.
+  param([Parameter(Mandatory, Position = 0)][string]$Subject, [Parameter(ValueFromRemainingArguments)][string[]]$Body)
+  if ($Subject.Length -gt 72) { throw "Subject too long: $($Subject.Length) chars (max 72)`n$Subject" }
+  $c = @('-m', $Subject) + @(foreach ($p in $Body) { '-m', $p })
+  git commit @c
+  ```
 - Start with an imperative verb after any prefix: `add`, `fix`, `extract`, `remove`. Not `feature`, `make`, `let's`.
 - Formal technical language. No conversational constructions ("make X Y, not Z", "do X instead of Y").
 
