@@ -121,6 +121,8 @@ When a change is both restructuring and performance, choose the emphasis.
 | One commit per file | Commit per logical change, not per file |
 | Sub-agent output left uncommitted | Incorporate sub-agent changes and commit appropriately |
 | Calling `git commit` directly | Always use the length gate script. Raw `git commit` bypasses the 72-char enforcement. |
+| "Mechanics dump" body (tracing variables, structs, or method calls) | State the human-observable defect and the fix in 1–2 plain sentences. The diff shows code identifiers. |
+| Vague verbs in subject ("account for", "handle", "deal with") | Use the specific action: "count", "prevent", "allow", "clamp", "strip". |
 
 ## Emergency Exception
 
