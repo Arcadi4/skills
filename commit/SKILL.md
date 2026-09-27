@@ -1,23 +1,23 @@
 ---
 name: commit
-description: Use when about to make git commits, when tempted to bundle unrelated changes behind a single message, or when commit history needs to support git bisect, revert, and cherry-pick workflows. Also use when reviewing a branch before creating a PR. If you are writing a plan, specify that the executor must load this skill before start working.
+description: Use before making commits.
 license: CC-BY-SA-4.0
 ---
 
-# Make Atomic Git Commits
+# Making Correct Commits
 
-## Core Principle
+## Atomic Commits
 
 Each commit = one logical change, one intention. If you cannot describe the commit in one sentence without "and", split it.
 
-- "Fix null pointer dereference in checkout flow" — passes
-- "Fix cart quantity bug and update user model and add tests" — fails ("and") → three commits
+- "Fix null pointer dereference in checkout flow": passes
+- "Fix cart quantity bug and update user model and add tests": fails ("and") → three commits
 
 Each commit must be **independent** (understandable alone), **buildable** (compiles, tests pass), and **complete** (no partial work).
 
 Atomic ≠ tiny. A refactor touching 20 files can be one atomic commit if it does one thing. The test: can it be reverted independently?
 
-### Red Flags — Split Now
+### Red Flags
 
 - Subject contains "and" or two commit types apply (e.g. feat + fix)
 - You're tempted to write "misc", "various", "cleanup", or "updates"
@@ -26,25 +26,25 @@ Atomic ≠ tiny. A refactor touching 20 files can be one atomic commit if it doe
 
 ### Revert-Boundary Gate
 
-Before committing a large staged diff, list the independent revert boundaries in one-line phrases. If more than one phrase is required, split the commit — even if the changes are coupled or all tests only pass after the full refactor. "They are coupled" is not an atomicity argument; use transitional buildable commits or explain why no independent revert boundary exists.
+Before committing a large staged diff, list the independent revert boundaries in one-line phrases. If more than one phrase is required, split the commit even if the changes are coupled or all tests only pass after the full refactor. "They are coupled" is not an atomicity argument; use transitional buildable commits or explain why no independent revert boundary exists.
 
 ## Common Rationalizations
 
-| Rationalization | Reality |
-|---|---|
-| "Only a few lines" | Size is irrelevant. Different intentions = different commits. |
-| "Fixed it while working on X" | Work context ≠ commit boundary. Different reason-to-exist = different commit. |
-| "Both are `chore:` type" | Same type ≠ same intention. `chore: update prettier` ≠ `chore: add dependency`. |
-| "Splitting is pedantic" | Non-atomic commits break bisect, complicate reverts, confuse reviewers. |
-| "Test file is too small" | No minimum line count. Tests are `test:` type — always separate. |
-| "They are deeply coupled" | Coupling explains staging order, not commit boundaries. Separate intentions with separate revert boundaries = separate commits. Dependency between commits is normal. |
-| "I'll just count the characters" | Manual counting fails. Always. Use the length gate script — never eyeball it. |
+| Rationalization                  | Reality                                                                                                                                                               |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Fixed it while working on X"    | Work context ≠ commit boundary. Different reason-to-exist = different commit.                                                                                         |
+| "Both are `chore:` type"         | Same type ≠ same intention. `chore: update prettier` ≠ `chore: add dependency`.                                                                                       |
+| "Splitting is pedantic"          | Non-atomic commits break bisect, complicate reverts, confuse reviewers.                                                                                               |
+| "Test file is too small"         | No minimum line count. Tests are `test:` type — always separate.                                                                                                      |
+| "They are deeply coupled"        | Coupling explains staging order, not commit boundaries. Separate intentions with separate revert boundaries = separate commits. Dependency between commits is normal. |
+| "I'll just count the characters" | Manual counting fails. Always. Always use the length gate script.                                                                                                     |
 
 ## Message Rules
 
 ### Discover Convention First
 
 Run `git log --oneline -20` and match the repo's existing format exactly:
+
 - **Prefix format**: Conventional types (`feat:`, `fix:`)? Module names (`auth:`, `ui:`)? None?
 - **Capitalization/punctuation**: Sentence case or lowercase? Trailing period?
 - **Scopes**: If parenthesized scopes exist (`feat(auth):`), use existing ones. Never invent scopes. Never use commit types as scopes (`fix(perf):` is wrong when `perf` is intended as a type).
@@ -53,7 +53,7 @@ No commit history? Pick one convention and apply consistently. Conventional Comm
 
 ### Subject Line
 
-- Max 72 characters. **Always commit through the length gate script** — never call `git commit` directly. Write the matching script below to an executable file and run it; it enforces the limit and is the only sanctioned commit command. Never count characters yourself — it does not work.
+- Max 72 characters. Write the script below to an temporary executable file and run it. Never run bare `git commit` nor count characters yourself.
 
   ```bash
   #!/usr/bin/env bash
@@ -73,57 +73,50 @@ No commit history? Pick one convention and apply consistently. Conventional Comm
   $c = @('-m', $Subject) + @(foreach ($p in $Body) { '-m', $p })
   git commit @c
   ```
-- Start with an imperative verb after any prefix: `add`, `fix`, `extract`, `remove`. Not `feature`, `make`, `let's`.
+
+- Start with an imperative verb after any prefix: `add`, `fix`, `extract`, `remove`. Not `the <noun>`, `make`, `let's`.
 - Formal technical language. No conversational constructions ("make X Y, not Z", "do X instead of Y").
 
 ### Body
 
-**Prefer no body.** Make the subject self-explanatory. Only add a body when the subject genuinely cannot carry the explanation.
+**Prefer no body.** Make the subject self-explanatory. Only add a body when the subject needs further justification.
 
-Body explains **WHY**, not WHAT — the diff shows what changed. Write prose, never bullet points or checklists. A one-line why-statement is almost always sufficient; if you need more than 3 `-m` paragraphs, your commit isn't atomic.
+Body explains **WHY**, not WHAT. The diff already shows what changed. Write prose, never bullet points or checklists. A one-line why-statement is almost always sufficient; if you need more than 3 `-m` paragraphs, your commit isn't atomic.
 
-| Body needed | No body needed |
-|---|---|
-| Bug fix with non-obvious cause | Typo, formatting, dead code removal |
-| Refactor that changes structure (why?) | Self-explanatory rename |
-| Performance improvement (bottleneck? gain?) | Single-line config or dependency bump |
-| Breaking change or migration step | Subject fully describes the change |
-
-### Forbidden in Messages
+Never include:
 
 - **File lists**: Git tracks files. "3 files changed, 5 tests added" is noise.
 - **Plan-internal terminology**: No task numbers ("Task 3"), wave/phase names, step labels. Commits must stand alone in `git log`. Reference ticket IDs from issue trackers, not planning artifacts.
+- **Code symbols**: No `foo()`, `bar`, `baz`, `x.y.z`. The diff shows code identifiers. Use prose to describe the effect of the change.
 
 ## Commit Types
 
-| Type | Description |
-|------|-------------|
-| feat | New user-facing feature |
-| fix | User-facing bug fix |
-| docs | Documentation or comments only |
-| style | Formatting, whitespace, linting — no logic change (never CSS/design) |
-| refactor | Code restructuring, no behavior change |
-| perf | Performance improvement |
-| test | Test-related changes (fixing tests = `test:`, not `fix:`) |
-| chore | Build process, dependencies, tooling |
-| ci | CI configuration and scripts |
+| Type     | Description                                                     |
+| -------- | --------------------------------------------------------------- |
+| feat     | New user-facing feature                                         |
+| fix      | User-facing bug fix                                             |
+| docs     | Documentation or comments only                                  |
+| style    | Formatting, whitespace, linting. NEVER use this for CSS changes |
+| refactor | Code restructuring, no behavior change                          |
+| perf     | Performance improvement                                         |
+| test     | Test-related changes (fixing tests = `test:` not `fix:`)        |
+| chore    | Build process, dependencies, tooling                            |
+| ci       | CI configuration and scripts                                    |
 
 When a change is both restructuring and performance, choose the emphasis.
 
+Always honor the repo's convention. This section is just FYI.
+
 ## Common Mistakes
 
-| Mistake | Fix |
-|---------|-----|
-| "Misc cleanup" commits | Each cleanup item = its own commit |
-| Generated files mixed with hand-written code | Generated files go in a separate commit |
-| Rename combined with semantic edits | Rename first (using `git mv`), then edit in next commit |
-| Rename split across commits (delete old + add new) | Stage both in one commit — git needs old and new together for rename detection |
-| One commit per file | Commit per logical change, not per file |
-| Sub-agent output left uncommitted | Incorporate sub-agent changes and commit appropriately |
-| Calling `git commit` directly | Always use the length gate script. Raw `git commit` bypasses the 72-char enforcement. |
+| Mistake                                                             | Fix                                                                                                    |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| "Misc cleanup" commits                                              | Each cleanup item = its own commit                                                                     |
+| Generated files mixed with hand-written code                        | Generated files go in a separate commit                                                                |
+| Rename combined with semantic edits                                 | Rename first (using `git mv`), then edit in next commit                                                |
+| Rename split across commits (delete old + add new)                  | Stage both in one commit — git needs old and new together for rename detection                         |
+| One commit per file                                                 | Commit per logical change, not per file                                                                |
+| Sub-agent output left uncommitted                                   | Incorporate sub-agent changes and commit appropriately                                                 |
+| Calling `git commit` directly                                       | Always use the length gate script. Raw `git commit` bypasses the 72-char enforcement.                  |
 | "Mechanics dump" body (tracing variables, structs, or method calls) | State the human-observable defect and the fix in 1–2 plain sentences. The diff shows code identifiers. |
-| Vague verbs in subject ("account for", "handle", "deal with") | Use the specific action: "count", "prevent", "allow", "clamp", "strip". |
-
-## Emergency Exception
-
-During active P1 outages, land the minimal fix first. Clean up history in a follow-up commit.
+| Vague verbs in subject ("account for", "handle", "deal with")       | Use the specific action: "count", "prevent", "allow", "clamp", "strip".                                |
